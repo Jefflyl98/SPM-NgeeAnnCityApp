@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngee Ann City Game</title>
+
+    <style>
+        body {
+          background-color: #f2f2f2;
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+        }
+        
+        .container {
+          background-color: #fff;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          text-align: center;
+        }
+        
+        h1 {
+          margin-bottom: 20px;
+        }
+        
+        button {
+          display: block;
+          margin: 10px auto;
+          padding: 12px 20px;
+          font-size: 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+          opacity: 0.8;
+        }
+        
+        .arcade-button {
+          background-color: #6495ED;
+          color: #fff;
+        }
+        
+        .free-play-button {
+          background-color: #D3D3D3;
+          color: #000;
+        }
+        
+        .load-game-button {
+          background-color: #6495ED;
+          color: #fff;
+        }
+        
+        .leaderboard-button {
+          background-color: #D3D3D3;
+          color: #000;
+        }
+        
+        .help-button {
+          background-color: #6495ED;
+          color: #fff;
+        }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ngee Ann City Game</h1>
+        <a href="arcade.html"><button class="arcade-button">Arcade Mode</button></a>
+        <a href="free.html"><button class="free-play-button">Free Play Mode</button></a>
+        <button class="load-game-button">Load Game</button>
+        <a href="leaderboard.html"><button class="leaderboard-button">Leaderboard</button></a>
+        <button class="help-button">Help</button>
+    </div>
+</body>
+</html>

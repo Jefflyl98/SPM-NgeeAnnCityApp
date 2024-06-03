@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngee Ann City Game - Free Play Mode</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 30px);
+            grid-template-rows: repeat(5, 30px);
+            grid-gap: 1px;
+            margin: 20px 0;
+        }
+        
+        .grid-container div {
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Ngee Ann City Game</h1>
+        <p>Arcade Mode</p>
+        <div class="grid-container">
+          <!-- Grid cells will be generated here -->
+        </div>
+        <div class="controls">
+          <button id="build-btn">Build</button>
+          <button id="next-btn">Next</button>
+          <button id="leaderboard-btn">Leaderboard</button>
+          <button id="help-btn">Help</button>
+        </div>
+        <div class="info">
+          <p>Coins: <span id="coins">16</span></p>
+          <p>Score: <span id="score">0</span></p>
+        </div>
+    </div>
+
+    <script src="free.js"></script>
+</body>
+</html>
