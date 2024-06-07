@@ -64,4 +64,22 @@
     margin-top: 10px;
   }
 
+  .grid-container .R {
+    background-color: #ffa;
+}
 
+.grid-container .I {
+    background-color: #aaf;
+}
+
+.grid-container .C {
+    background-color: #afa;
+}
+
+.grid-container .O {
+    background-color: rgb(241, 170, 255);
+}
+
+.grid-container .road {
+    background-color: #4e4e4e;
+}
