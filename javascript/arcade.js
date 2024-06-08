@@ -1,7 +1,7 @@
 // script.js
 const gridContainer = document.querySelector('.grid-container');
 const buildBtn = document.getElementById('build-btn');
-const nextBtn = document.getElementById('next-btn');
+const demolishBtn = document.getElementById('demolish-btn');
 const leaderboardBtn = document.getElementById('leaderboard-btn');
 const helpBtn = document.getElementById('help-btn');
 const coinsEl = document.getElementById('coins');
@@ -11,6 +11,7 @@ const turnEl = document.getElementById('turn');
 let coins = 16;
 let score = 0;
 let turn = 0;
+let builtBuildings = 0;
 let currentBuilding = null;
 let availableBuildings = ['R', 'I', 'C', 'O', 'road'];
 let selectedCells = [];
@@ -32,19 +33,21 @@ for (let y = 0; y < 20; y++) {
             selectedCells = [cell];
             cell.style.background = 'red';
           } 
-          console.log(selectedCells);
         });
         gridContainer.appendChild(cell);
     }
 }
 
 // Add event listeners for buttons
-buildBtn.addEventListener('click', (x, y) => {
-  if (turn > 1 && !isAdjacent(x, y)) {
-    alert('You must build adjacent to an existing building.');
-    return;
-  }
-  if (selectedCells != null) {
+buildBtn.addEventListener('click', () => {
+  if (selectedCells.length != 0) {
+    const x = selectedCells[0].dataset.x;
+    const y = selectedCells[0].dataset.y;  
+    console.log(selectedCells);
+    if (builtBuildings > 0 && !isAdjacent(x, y)) {
+      alert('You must build adjacent to an existing building.');
+      return;
+    }
     selectedCells[0].style.background = '';
     const randomBuildings = getRandomBuildings();
     console.log(randomBuildings);
@@ -57,13 +60,13 @@ buildBtn.addEventListener('click', (x, y) => {
     document.getElementById('buildBtnOption1').addEventListener('click', () => {
       buildingOptions = randomBuildings[0];
       document.querySelector('.popup-form').style.display = 'none';
-      placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
+      placeBuilding(x, y, buildingOptions);
       selectedCells = [];
     });
     document.getElementById('buildBtnOption2').addEventListener('click', () => {
       buildingOptions = randomBuildings[1];
       document.querySelector('.popup-form').style.display = 'none';
-      placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
+      placeBuilding(x, y, buildingOptions);
       selectedCells = [];
     });
     // if (buildingOptions) {
@@ -71,12 +74,32 @@ buildBtn.addEventListener('click', (x, y) => {
     //   selectedCells = [];
     // }
   } else {
-    alert('Please select a cell first.');
+    alert('Invalid cell.');
   }
 });
-nextBtn.addEventListener('click', next);
+demolishBtn.addEventListener('click', demolish);
 leaderboardBtn.addEventListener('click', leaderboard);
 helpBtn.addEventListener('click', help);
+
+function demolish(x, y) {
+  //The player may select any cell with buildings to demolish it for 1 coin.
+    if (selectedCells != null) {
+      selectedCells[0].style.background = '';
+      const cell = document.querySelector(`.grid-cell[data-x='${selectedCells[0].dataset.x}'][data-y='${selectedCells[0].dataset.y}']`);
+      if (cell.classList.contains('occupied')) {
+        cell.classList.remove('occupied');
+        cell.classList.remove(cell.classList[1]);
+        cell.textContent = '';
+        cell.background = '';
+        coins--;
+        builtBuildings--;
+        updateInfo();
+        selectedCells = [];
+      } else {
+        alert('No building to demolish on this cell.');
+      }
+    }
+}
 
 function updateInfo() {
   coinsEl.textContent = coins;
@@ -115,8 +138,8 @@ function isAdjacent(x, y) {
   ];
 
   for (let { dx, dy } of adjacentCoords) {
-      const nx = x + dx;
-      const ny = y + dy;
+      const nx = parseInt(x) + dx;
+      const ny = parseInt(y) + dy;
       const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
       if (adjacentCell && adjacentCell.classList.contains('occupied')) {
           return true;
@@ -132,10 +155,10 @@ function placeBuilding(x, y, buildingType) {
   }
   
   const cell = document.querySelector(`.grid-cell[data-x='${x}'][data-y='${y}']`);
-  if (!cell || cell.classList.contains('occupied')) {
-      alert('Invalid placement.');
-      return;
-  }
+  // if (!cell || cell.classList.contains('occupied')) {
+  //     alert('Invalid placement.');
+  //     return;
+  // }
 
   // if (turn > 1 && !isAdjacent(x, y)) {
   //     alert('You must build adjacent to an existing building.');
@@ -147,6 +170,7 @@ function placeBuilding(x, y, buildingType) {
 
   coins--;
   turn++;
+  builtBuildings++;
   calculateScore();
   updateInfo();
 }
@@ -219,10 +243,6 @@ function getAdjacentBuildings(x, y) {
       const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
       return adjacentCell ? adjacentCell.textContent : null;
   }).filter(Boolean);
-}
-
-function next() {
-  startTurn();
 }
 
 function leaderboard() {
