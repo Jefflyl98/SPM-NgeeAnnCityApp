@@ -13,8 +13,9 @@ let score = 0;
 let turn = 0;
 let currentBuilding = null;
 let availableBuildings = ['R', 'I', 'C', 'O', 'road'];
+let selectedCells = [];
 
-
+// Code to generate button for 20x20
 for (let y = 0; y < 20; y++) {
     for (let x = 0; x < 20; x++) {
         const cell = document.createElement('div');
@@ -22,13 +23,39 @@ for (let y = 0; y < 20; y++) {
         cell.dataset.x = x;
         cell.dataset.y = y;
         cell.classList.add('grid-cell');
-        cell.addEventListener('click', () => placeBuilding(x, y));
+        // cell.addEventListener('click', () => placeBuilding(x, y));
+        cell.addEventListener('click', () => {
+          if (turn > 1 && !isAdjacent(x, y)) {
+            alert('You must build adjacent to an existing building.');
+            return;
+          }
+          if (!selectedCells.includes(cell)){
+            if (selectedCells.length > 0){
+              selectedCells[0].style.background = '';
+            }
+            selectedCells = [cell];
+            cell.style.background = 'red';
+          } 
+          console.log(selectedCells);
+        });
         gridContainer.appendChild(cell);
     }
 }
 
 // Add event listeners for buttons
-buildBtn.addEventListener('click', build);
+buildBtn.addEventListener('click', () => {
+  if (selectedCells != null) {
+    selectedCells[0].style.background = '';
+    const randomBuildings = getRandomBuildings();
+    const buildingOptions = prompt(`Choose a building to build on cell (${selectedCells[0].dataset.x}, ${selectedCells[0].dataset.y}): ${randomBuildings.join(', ')}`);
+    if (buildingOptions) {
+      placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
+      selectedCells = [];
+    }
+  } else {
+    alert('Please select a cell first.');
+  }
+});
 nextBtn.addEventListener('click', next);
 leaderboardBtn.addEventListener('click', leaderboard);
 helpBtn.addEventListener('click', help);
@@ -39,30 +66,18 @@ function updateInfo() {
   turnEl.textContent = turn;
 }
 
-
-/*function build() {
-  // Build a structure in the grid
-  // Implement your logic for building here
+function getRandomBuildings() {
+  const randomIndex1 = Math.floor(Math.random() * availableBuildings.length);
+  const randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
+  while (randomIndex1 === randomIndex2) {
+    randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
+  }
+  return [availableBuildings[randomIndex1], availableBuildings[randomIndex2]];
 }
 
-function next() {
-  // Go to the next stage of the game
-  // Implement your logic for going to the next stage here
-}
-
-function leaderboard() {
-  // Show the leaderboard
-  // Implement your logic for showing the leaderboard here
-}
-
-function help() {
-  // Show help instructions
-  // Implement your logic for showing help here
-}*/
-
-function randomBuilding() {
-  return availableBuildings[Math.floor(Math.random() * availableBuildings.length)];
-}
+// function randomBuilding() {
+//   return availableBuildings[Math.floor(Math.random() * availableBuildings.length)];
+// }
 
 function startTurn() {
   if (coins <= 0) {
@@ -92,7 +107,7 @@ function isAdjacent(x, y) {
   return false;
 }
 
-function placeBuilding(x, y) {
+function placeBuilding(x, y, buildingType) {
   if (coins <= 0) {
       alert('No more coins left to build.');
       return;
@@ -109,9 +124,8 @@ function placeBuilding(x, y) {
       return;
   }
 
-  const selectedBuilding = randomBuilding();
-  cell.classList.add(selectedBuilding, 'occupied');
-  cell.textContent = selectedBuilding;
+  cell.classList.add(buildingType, 'occupied');
+  cell.textContent = buildingType;
 
   coins--;
   calculateScore();
