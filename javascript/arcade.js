@@ -25,10 +25,6 @@ for (let y = 0; y < 20; y++) {
         cell.classList.add('grid-cell');
         // cell.addEventListener('click', () => placeBuilding(x, y));
         cell.addEventListener('click', () => {
-          if (turn > 1 && !isAdjacent(x, y)) {
-            alert('You must build adjacent to an existing building.');
-            return;
-          }
           if (!selectedCells.includes(cell)){
             if (selectedCells.length > 0){
               selectedCells[0].style.background = '';
