@@ -39,15 +39,37 @@ for (let y = 0; y < 20; y++) {
 }
 
 // Add event listeners for buttons
-buildBtn.addEventListener('click', () => {
+buildBtn.addEventListener('click', (x, y) => {
+  if (turn > 1 && !isAdjacent(x, y)) {
+    alert('You must build adjacent to an existing building.');
+    return;
+  }
   if (selectedCells != null) {
     selectedCells[0].style.background = '';
     const randomBuildings = getRandomBuildings();
-    const buildingOptions = prompt(`Choose a building to build on cell (${selectedCells[0].dataset.x}, ${selectedCells[0].dataset.y}): ${randomBuildings.join(', ')}`);
-    if (buildingOptions) {
+    console.log(randomBuildings);
+    let buildingOptions = null;
+    //const buildingOptions = prompt(`Choose a building to build on cell (${selectedCells[0].dataset.x}, ${selectedCells[0].dataset.y}): ${randomBuildings.join(', ')}`);
+    document.getElementById('buildOption1').innerHTML = randomBuildings[0];
+    document.getElementById('buildOption2').innerHTML = randomBuildings[1];
+    document.querySelector('.popup-form').style.display = 'block';
+
+    document.getElementById('buildBtnOption1').addEventListener('click', () => {
+      buildingOptions = randomBuildings[0];
+      document.querySelector('.popup-form').style.display = 'none';
       placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
       selectedCells = [];
-    }
+    });
+    document.getElementById('buildBtnOption2').addEventListener('click', () => {
+      buildingOptions = randomBuildings[1];
+      document.querySelector('.popup-form').style.display = 'none';
+      placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
+      selectedCells = [];
+    });
+    // if (buildingOptions) {
+    //   placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
+    //   selectedCells = [];
+    // }
   } else {
     alert('Please select a cell first.');
   }
@@ -63,8 +85,8 @@ function updateInfo() {
 }
 
 function getRandomBuildings() {
-  const randomIndex1 = Math.floor(Math.random() * availableBuildings.length);
-  const randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
+  let randomIndex1 = Math.floor(Math.random() * availableBuildings.length);
+  let randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
   while (randomIndex1 === randomIndex2) {
     randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
   }
@@ -115,15 +137,16 @@ function placeBuilding(x, y, buildingType) {
       return;
   }
 
-  if (turn > 1 && !isAdjacent(x, y)) {
-      alert('You must build adjacent to an existing building.');
-      return;
-  }
+  // if (turn > 1 && !isAdjacent(x, y)) {
+  //     alert('You must build adjacent to an existing building.');
+  //     return;
+  // }
 
   cell.classList.add(buildingType, 'occupied');
   cell.textContent = buildingType;
 
   coins--;
+  turn++;
   calculateScore();
   updateInfo();
 }
