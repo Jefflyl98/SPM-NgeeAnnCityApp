@@ -57,18 +57,26 @@ buildBtn.addEventListener('click', () => {
     document.getElementById('buildOption2').innerHTML = randomBuildings[1];
     document.querySelector('.popup-form').style.display = 'block';
 
-    document.getElementById('buildBtnOption1').addEventListener('click', () => {
+    const buildBtn1 = document.getElementById('buildBtnOption1');
+    const buildBtn2 = document.getElementById('buildBtnOption2');
+    const controller = new AbortController();
+    buildBtn1.addEventListener('click', () => {
       buildingOptions = randomBuildings[0];
       document.querySelector('.popup-form').style.display = 'none';
       placeBuilding(x, y, buildingOptions);
       selectedCells = [];
-    });
-    document.getElementById('buildBtnOption2').addEventListener('click', () => {
+      buildingOptions = null;
+      controller.abort();
+    }, { signal: controller.signal });
+    buildBtn2.addEventListener('click', () => {
       buildingOptions = randomBuildings[1];
       document.querySelector('.popup-form').style.display = 'none';
       placeBuilding(x, y, buildingOptions);
       selectedCells = [];
-    });
+      controller.abort();
+    }, { signal: controller.signal });
+
+    
     // if (buildingOptions) {
     //   placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, buildingOptions);
     //   selectedCells = [];
@@ -78,8 +86,6 @@ buildBtn.addEventListener('click', () => {
   }
 });
 demolishBtn.addEventListener('click', demolish);
-leaderboardBtn.addEventListener('click', leaderboard);
-helpBtn.addEventListener('click', help);
 
 function demolish(x, y) {
   if (coins <= 0) {
@@ -97,6 +103,8 @@ function demolish(x, y) {
       cell.background = '';
       coins--;
       builtBuildings--;
+      calculateScore();
+      upkeep();
       updateInfo();
       selectedCells = [];
     } else {
@@ -175,6 +183,7 @@ function placeBuilding(x, y, buildingType) {
   turn++;
   builtBuildings++;
   calculateScore();
+  upkeep();
   updateInfo();
 }
 
@@ -185,8 +194,12 @@ function end() {
     <div class="end-info">
       <div><h2>Game Over!</h2></div>
       <div><p>Your score is ${score}.</p></div>
+      <div>
+        <label for="name">Enter your name:</label>
+        <input type="text" id="name" placeholder="Optional">
+      </div>
       <div class="end-button">
-        <button onclick="restart()">Restart</button>
+        <button onclick="submitScore()">Submit Score</button>
         <button id="end">Back to Home</button>
       </div>
     </div>
@@ -194,6 +207,16 @@ function end() {
   document.body.appendChild(endScreen);
 
   document.getElementById('end').addEventListener('click', () => {
+    window.location.href = '../index.html';
+  });
+}
+
+function submitScore() {
+  const nameInput = document.getElementById('name');
+  const name = nameInput.value.trim() || 'Anonymous';
+  const scoreData = {name, score}
+  localStorage.setItem('scoreData', JSON.stringify(scoreData));
+  nameInput.addEventListener('click', () => {
     window.location.href = '../index.html';
   });
 }
@@ -250,7 +273,49 @@ function calculateScore() {
               break;
       }
   });
-  localStorage.setItem('score', score);
+}
+
+function upkeep() {
+  // Profit and upkeep cost of the 5 types of buildings:
+  const cells = document.querySelectorAll('.grid-cell.occupied');
+  cells.forEach(cell => {
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+    const buildingType = cell.textContent;
+
+    switch (buildingType) {
+      case 'R':
+        // • Residential (R): Each residential building generates 1 coin per turn. Each cluster of residential
+        // buildings (must be immediately next to each other) requires 1 coin per turn to upkeep.
+        const adjacentR = getAdjacentBuildings(x, y).filter(adj => adj === 'R').length;
+        coins++;
+        if (adjacentR > 0) {
+          for (let i = 0; i < adjacentR; i++) {
+            coins--;
+          }
+        }
+        break;
+      case 'I':
+        // • Industry (I): Each industry generates 2 coins per turn and cost 1 coin per turn to upkeep.
+        coins++;
+        break;
+      case 'C':
+        // • Commercial (C): Each commercial generates 3 coins per turn and cost 2 coins per turn to upkeep.
+        coins++;
+        break;
+      case 'O':
+        // • Park (O): Each park costs 1 coin to upkeep.
+        coins--;
+        break;
+      case 'road':
+        // • Road (*): Each unconnected road segment costs 1 coin to upkeep
+        const adjacentRoad = getAdjacentBuildings(x, y).filter(adj => adj === 'road' || adj === 'R' || adj === 'C' || adj === 'I' || adj === 'O').length;
+        if (adjacentRoad === 0) {
+          coins--;
+        }
+        break;
+    }
+  });
 }
 
 function getAdjacentBuildings(x, y) {
@@ -267,14 +332,6 @@ function getAdjacentBuildings(x, y) {
       const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
       return adjacentCell ? adjacentCell.textContent : null;
   }).filter(Boolean);
-}
-
-function leaderboard() {
-  alert('Leaderboard feature is not implemented yet.');
-}
-
-function help() {
-  alert('Help instructions are not implemented yet.');
 }
 
 // Start the game
