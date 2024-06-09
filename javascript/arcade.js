@@ -82,29 +82,36 @@ leaderboardBtn.addEventListener('click', leaderboard);
 helpBtn.addEventListener('click', help);
 
 function demolish(x, y) {
+  if (coins <= 0) {
+    alert('No more coins left to demolish.');
+    return;
+  }
   //The player may select any cell with buildings to demolish it for 1 coin.
-    if (selectedCells != null) {
-      selectedCells[0].style.background = '';
-      const cell = document.querySelector(`.grid-cell[data-x='${selectedCells[0].dataset.x}'][data-y='${selectedCells[0].dataset.y}']`);
-      if (cell.classList.contains('occupied')) {
-        cell.classList.remove('occupied');
-        cell.classList.remove(cell.classList[1]);
-        cell.textContent = '';
-        cell.background = '';
-        coins--;
-        builtBuildings--;
-        updateInfo();
-        selectedCells = [];
-      } else {
-        alert('No building to demolish on this cell.');
-      }
+  if (selectedCells != null) {
+    selectedCells[0].style.background = '';
+    const cell = document.querySelector(`.grid-cell[data-x='${selectedCells[0].dataset.x}'][data-y='${selectedCells[0].dataset.y}']`);
+    if (cell.classList.contains('occupied')) {
+      cell.classList.remove('occupied');
+      cell.classList.remove(cell.classList[1]);
+      cell.textContent = '';
+      cell.background = '';
+      coins--;
+      builtBuildings--;
+      updateInfo();
+      selectedCells = [];
+    } else {
+      alert('No building to demolish on this cell.');
     }
+  }
 }
 
 function updateInfo() {
   coinsEl.textContent = coins;
   scoreEl.textContent = score;
   turnEl.textContent = turn;
+  if (coins <= 0) {
+    end();
+  }
 }
 
 function getRandomBuildings() {
@@ -115,10 +122,6 @@ function getRandomBuildings() {
   }
   return [availableBuildings[randomIndex1], availableBuildings[randomIndex2]];
 }
-
-// function randomBuilding() {
-//   return availableBuildings[Math.floor(Math.random() * availableBuildings.length)];
-// }
 
 function startTurn() {
   if (coins <= 0) {
@@ -175,6 +178,26 @@ function placeBuilding(x, y, buildingType) {
   updateInfo();
 }
 
+function end() {
+  const endScreen = document.createElement('div');
+  endScreen.className = 'end-screen';
+  endScreen.innerHTML = `
+    <div class="end-info">
+      <div><h2>Game Over!</h2></div>
+      <div><p>Your score is ${score}.</p></div>
+      <div class="end-button">
+        <button onclick="restart()">Restart</button>
+        <button id="end">Back to Home</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(endScreen);
+
+  document.getElementById('end').addEventListener('click', () => {
+    window.location.href = '../index.html';
+  });
+}
+
 function calculateScore() {
   score = 0;
   const cells = document.querySelectorAll('.grid-cell.occupied');
@@ -227,6 +250,7 @@ function calculateScore() {
               break;
       }
   });
+  localStorage.setItem('score', score);
 }
 
 function getAdjacentBuildings(x, y) {
