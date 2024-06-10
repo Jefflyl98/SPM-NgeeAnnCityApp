@@ -102,6 +102,7 @@ function demolish(x, y) {
       cell.textContent = '';
       cell.background = '';
       coins--;
+      turn++;
       builtBuildings--;
       calculateScore();
       upkeep();
@@ -117,7 +118,7 @@ function updateInfo() {
   coinsEl.textContent = coins;
   scoreEl.textContent = score;
   turnEl.textContent = turn;
-  if (coins <= 0) {
+  if (coins <= 0 || builtBuildings == 400) {
     end();
   }
 }
