@@ -1,4 +1,3 @@
-/* style.css */
 * {
   box-sizing: border-box;
 }
@@ -67,32 +66,31 @@ button:hover {
 }
 
 .info {
-  display:flex;
+  display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
 
-  .grid-container .R {
-    background-color: #ffa;
+.grid-container .R {
+  background-color: #ffa;
 }
 
 .grid-container .I {
-    background-color: #aaf;
+  background-color: #aaf;
 }
 
 .grid-container .C {
-    background-color: #afa;
+  background-color: #afa;
 }
 
 .grid-container .O {
-    background-color: rgb(241, 170, 255);
+  background-color: rgb(241, 170, 255);
 }
 
 .grid-container .road {
-    background-color: #4e4e4e;
-    color:white;
+  background-color: #4e4e4e;
+  color: white;
 }
-
 
 .popup-form {
   position: fixed;
@@ -146,7 +144,7 @@ button:hover {
   width: 50%;
   height: 50%;
   background-color: black;
-  color:white;
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -180,4 +178,58 @@ button:hover {
 
 .end-screen button:hover {
   background-color: #3e8e41;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.popup-heading {
+  margin-bottom: 20px;
+  color: white;
+  font-size: 24px;
+}
+
+.popup {
+  background: white;
+  padding: 40px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.option {
+  flex: 1;
+  background-color: #ddd;
+  padding: 40px 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.option img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.option:hover {
+  background-color: #ccc;
 }
