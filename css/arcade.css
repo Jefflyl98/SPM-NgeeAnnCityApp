@@ -38,6 +38,11 @@ body {
   cursor: pointer;
 }
 
+.grid-container div img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .grid-container div:hover {
   background-color: black;
 }
@@ -71,23 +76,23 @@ button:hover {
   margin-top: 10px;
 }
 
-.grid-container .R {
+.grid-container .Residential {
   background-color: #ffa;
 }
 
-.grid-container .I {
+.grid-container .Industry {
   background-color: #aaf;
 }
 
-.grid-container .C {
+.grid-container .Commercial {
   background-color: #afa;
 }
 
-.grid-container .O {
+.grid-container .Park {
   background-color: rgb(241, 170, 255);
 }
 
-.grid-container .road {
+.grid-container .Road {
   background-color: #4e4e4e;
   color: white;
 }

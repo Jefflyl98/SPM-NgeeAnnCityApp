@@ -14,6 +14,13 @@ let turn = 0;
 let builtBuildings = 0;
 let currentBuilding = null;
 let availableBuildings = ['R', 'I', 'C', 'O', 'road'];
+let buildingImages = {
+  'Residential': '../buildinggraphics/residential.png',
+  'Industry': '../buildinggraphics/industry.png',
+  'Commercial': '../buildinggraphics/commercial.png',
+  'Park': '../buildinggraphics/park.png',
+  'Road': '../buildinggraphics/road.png'
+};
 let selectedCells = [];
 
 // Code to generate grid for 20x20
@@ -57,8 +64,8 @@ demolishBtn.addEventListener('click', demolish);
 
 function showPopup() {
   const randomBuildings = getRandomBuildings();
-  document.getElementById('buildOption1').innerHTML = randomBuildings[0];
-  document.getElementById('buildOption2').innerHTML = randomBuildings[1];
+  document.getElementById('buildOption1').innerHTML = `<img src="${buildingImages[randomBuildings[0]]}" alt="${randomBuildings[0]}"> ${randomBuildings[0]}`;
+  document.getElementById('buildOption2').innerHTML = `<img src="${buildingImages[randomBuildings[1]]}" alt="${randomBuildings[1]}"> ${randomBuildings[1]}`;
   popupOverlay.style.display = 'flex';
 
   const buildBtn1 = document.getElementById('buildBtnOption1');
@@ -91,7 +98,7 @@ function demolish() {
     if (cell.classList.contains('occupied')) {
       cell.classList.remove('occupied');
       cell.classList.remove(cell.classList[1]);
-      cell.textContent = '';
+      cell.innerHTML = '';
       coins--;
       turn++;
       builtBuildings--;
@@ -150,7 +157,7 @@ function placeBuilding(x, y, buildingType) {
 
   const cell = document.querySelector(`.grid-cell[data-x='${x}'][data-y='${y}']`);
   cell.classList.add(buildingType, 'occupied');
-  cell.textContent = buildingType;
+  cell.innerHTML = `<img src="${buildingImages[buildingType]}" alt="${buildingType}">`;
 
   coins--;
   turn++;
@@ -197,7 +204,7 @@ function submitScore() {
 function calculateScore() {
   score = 0;
   const cells = document.querySelectorAll('.grid-cell.occupied');
-  const industryCount = document.querySelectorAll('.I').length;
+  const industryCount = document.querySelectorAll('.Industry').length;
 
   cells.forEach(cell => {
     const x = parseInt(cell.dataset.x);
