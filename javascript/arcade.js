@@ -209,7 +209,7 @@ function calculateScore() {
   cells.forEach(cell => {
     const x = parseInt(cell.dataset.x);
     const y = parseInt(cell.dataset.y);
-    const buildingType = cell.textContent;
+    const buildingType = cell.classList[1];
 
     switch (buildingType) {
       case 'R':
@@ -223,29 +223,50 @@ function calculateScore() {
           if (adj === 'O') adjacentO++;
           if (adj === 'I') adjacentI++;
         });
-        score += adjacentI > 0 ? 1 : adjacentR + adjacentC + 2 * adjacentO;
+
+        if (adjacentI > 0) {
+          score += 1; // Residential next to industry scores 1 point
+        } else {
+          score += adjacentR + adjacentC + 2 * adjacentO;
+        }
         break;
-      case 'I':
+
+      case 'Industry':
+        // Score 1 point per industry in the city
         score += industryCount;
+
+        // Generate coins based on adjacent residential buildings
+        const adjacentResidentialI = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += adjacentResidentialI;
         break;
-      case 'C':
+
+      case 'Commercial':
+        // Score 1 point per commercial adjacent to it
         let adjacentCommercial = 0;
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'C') adjacentCommercial++;
+          if (adj === 'Commercial') adjacentCommercial++;
         });
         score += adjacentCommercial;
+
+        // Generate coins based on adjacent residential buildings
+        const adjacentResidentialC = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += adjacentResidentialC;
         break;
-      case 'O':
+
+      case 'Park':
+        // Score 1 point per park adjacent to it
         let adjacentPark = 0;
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'O') adjacentPark++;
+          if (adj === 'Park') adjacentPark++;
         });
         score += adjacentPark;
         break;
-      case 'road':
+
+      case 'Road':
+        // Score 1 point per connected road in the same row
         let connectedRoads = 0;
         for (let i = 0; i < 20; i++) {
-          if (document.querySelector(`.grid-cell[data-x='${x}'][data-y='${i}']`).textContent === 'road') {
+          if (document.querySelector(`.grid-cell[data-x='${x}'][data-y='${i}']`).classList.contains('Road')) {
             connectedRoads++;
           }
         }
@@ -253,6 +274,7 @@ function calculateScore() {
         break;
     }
   });
+  scoreEl.textContent = score;
 }
 
 function upkeep() {
