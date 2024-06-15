@@ -13,7 +13,7 @@ let score = 0;
 let turn = 0;
 let builtBuildings = 0;
 let currentBuilding = null;
-let availableBuildings = ['R', 'I', 'C', 'O', 'road'];
+let availableBuildings = ['Road', 'Industry', 'Commercial', 'Park', 'Road'];
 let buildingImages = {
   'Residential': '../buildinggraphics/residential.png',
   'Industry': '../buildinggraphics/industry.png',

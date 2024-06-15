@@ -206,10 +206,12 @@ button:hover {
 
 .popup {
   background: white;
-  padding: 40px 20px;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: center;
+  width: 90%; /* Change this width to adjust the size */
+  max-width: 400px; /* Max width for larger screens */
 }
 
 .options {
@@ -221,7 +223,7 @@ button:hover {
 .option {
   flex: 1;
   background-color: #ddd;
-  padding: 40px 20px;
+  padding: 20px;
   border-radius: 10px;
   text-align: center;
   font-size: 18px;
