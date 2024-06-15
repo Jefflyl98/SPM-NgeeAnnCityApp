@@ -172,7 +172,7 @@ function end() {
   endScreen.className = 'end-screen';
   endScreen.innerHTML = `
     <div class="end-info">
-      <div><h2>Game Over!</h2></div>
+      <div><h1>Game Over!</h1></div>
       <div><p>Your score is ${score}.</p></div>
       <div>
         <label for="name">Enter your name:</label>

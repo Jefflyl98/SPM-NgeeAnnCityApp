@@ -148,12 +148,13 @@ button:hover {
 .end-screen .end-info {
   width: 50%;
   height: 50%;
-  background-color: black;
+  background-color: rgb(177, 177, 177);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-radius: 10px;
 }
 
 .end-button {
@@ -175,9 +176,9 @@ button:hover {
   background-color: #4CAF50;
   color: #fff;
   padding: 10px 20px;
-  margin: 0px 10px;
+  margin: 20px 10px 0px;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
