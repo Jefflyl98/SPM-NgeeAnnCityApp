@@ -3,6 +3,8 @@ const buildBtn = document.getElementById('build-btn');
 const demolishBtn = document.getElementById('demolish-btn');
 const leaderboardBtn = document.getElementById('leaderboard-btn');
 const helpBtn = document.getElementById('help-btn');
+const saveBtn = document.getElementById('save-btn');
+const loadBtn = document.getElementById('load-btn');
 const coinsEl = document.getElementById('coins');
 const scoreEl = document.getElementById('score');
 const turnEl = document.getElementById('turn');
@@ -47,6 +49,8 @@ buildBtn.addEventListener('click', () => {
 });
 
 demolishBtn.addEventListener('click', demolish);
+saveBtn.addEventListener('click', saveGameState);
+loadBtn.addEventListener('click', loadGameState);
 
 function initializeGrid(size) {
   existingCells = Array.from(document.querySelectorAll('.grid-cell')).map(cell => ({
@@ -272,6 +276,41 @@ function getAdjacentBuildings(x, y) {
     const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
     return adjacentCell ? adjacentCell.classList[1] : null;
   }).filter(Boolean);
+}
+
+function saveGameState() {
+  const gameState = {
+    coins,
+    score,
+    turn,
+    builtBuildings,
+    gridSize,
+    existingCells: Array.from(document.querySelectorAll('.grid-cell')).map(cell => ({
+      x: parseInt(cell.dataset.x),
+      y: parseInt(cell.dataset.y),
+      classes: cell.className,
+      content: cell.innerHTML
+    }))
+  };
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+  alert('Game saved!');
+}
+
+function loadGameState() {
+  const savedState = localStorage.getItem('gameState');
+  if (savedState) {
+    const gameState = JSON.parse(savedState);
+    coins = gameState.coins;
+    score = gameState.score;
+    turn = gameState.turn;
+    builtBuildings = gameState.builtBuildings;
+    gridSize = gameState.gridSize;
+    existingCells = gameState.existingCells;
+    initializeGrid(gridSize);
+    updateInfo();
+  } else {
+    alert('No saved game found.');
+  }
 }
 
 // Start the game
