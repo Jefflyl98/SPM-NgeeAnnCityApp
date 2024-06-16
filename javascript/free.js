@@ -6,60 +6,61 @@ const helpBtn = document.getElementById('help-btn');
 const coinsEl = document.getElementById('coins');
 const scoreEl = document.getElementById('score');
 const turnEl = document.getElementById('turn');
+const popupOverlay = document.getElementById('popupOverlay');
 
-let coins = 16;
+let coins = Infinity;  // Unlimited coins for Free Play mode
 let score = 0;
-let turn = 0;
+let turn = 1;
 let builtBuildings = 0;
 let currentBuilding = null;
-let availableBuildings = ['R', 'I', 'C', 'O', 'road'];
+let availableBuildings = ['Residential', 'Industry', 'Commercial', 'Park', 'Road'];
+let buildingImages = {
+  'Residential': '../buildinggraphics/residential.png',
+  'Industry': '../buildinggraphics/industry.png',
+  'Commercial': '../buildinggraphics/commercial.png',
+  'Park': '../buildinggraphics/park.png',
+  'Road': '../buildinggraphics/road.png'
+};
 let selectedCells = [];
-let gridSize = 5;
+let gridSize = 5;  // Start with a 5x5 grid
+let existingCells = []; // Store existing cells
 
 initializeGrid(gridSize);
+
+// Update display
+updateInfo();
 
 // Add event listeners for buttons
 buildBtn.addEventListener('click', () => {
   if (selectedCells.length !== 0) {
-    const x = parseInt(selectedCells[0].dataset.x);
-    const y = parseInt(selectedCells[0].dataset.y);
+    const x = selectedCells[0].dataset.x;
+    const y = selectedCells[0].dataset.y;
     if (builtBuildings > 0 && !isAdjacent(x, y)) {
       alert('You must build adjacent to an existing building.');
       return;
     }
     selectedCells[0].style.background = '';
-    const randomBuildings = getRandomBuildings();
-    let buildingOptions = null;
-    document.getElementById('buildOption1').innerHTML = randomBuildings[0];
-    document.getElementById('buildOption2').innerHTML = randomBuildings[1];
-    document.querySelector('.popup-form').style.display = 'block';
-
-    const buildBtn1 = document.getElementById('buildBtnOption1');
-    const buildBtn2 = document.getElementById('buildBtnOption2');
-    const controller = new AbortController();
-    buildBtn1.addEventListener('click', () => {
-      buildingOptions = randomBuildings[0];
-      document.querySelector('.popup-form').style.display = 'none';
-      placeBuilding(x, y, buildingOptions);
-      selectedCells = [];
-      buildingOptions = null;
-      controller.abort();
-    }, { signal: controller.signal });
-    buildBtn2.addEventListener('click', () => {
-      buildingOptions = randomBuildings[1];
-      document.querySelector('.popup-form').style.display = 'none';
-      placeBuilding(x, y, buildingOptions);
-      selectedCells = [];
-      controller.abort();
-    }, { signal: controller.signal });
+    showPopup();
   } else {
     alert('Invalid cell.');
   }
 });
+
 demolishBtn.addEventListener('click', demolish);
 
 function initializeGrid(size) {
-  gridContainer.innerHTML = '';
+  existingCells = Array.from(document.querySelectorAll('.grid-cell')).map(cell => ({
+    x: parseInt(cell.dataset.x),
+    y: parseInt(cell.dataset.y),
+    classes: cell.className,
+    content: cell.innerHTML
+  }));
+
+  const offset = (size - 5) / 2;
+  gridContainer.innerHTML = '';  // Clear the grid
+  gridContainer.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+  gridContainer.style.gridTemplateRows = `repeat(${size}, 30px)`;
+
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const cell = document.createElement('div');
@@ -76,17 +77,69 @@ function initializeGrid(size) {
           cell.style.background = 'red';
         }
       });
+
+      // Restore existing buildings
+      const existingCell = existingCells.find(c => c.x === x - offset && c.y === y - offset);
+      if (existingCell) {
+        cell.className = existingCell.classes;
+        cell.innerHTML = existingCell.content;
+      }
+
       gridContainer.appendChild(cell);
     }
   }
 }
 
+function showPopup() {
+  const randomBuildings = getRandomBuildings();
+  document.getElementById('buildOption1').innerHTML = `<img src="${buildingImages[randomBuildings[0]]}" alt="${randomBuildings[0]}"> ${randomBuildings[0]}`;
+  document.getElementById('buildOption2').innerHTML = `<img src="${buildingImages[randomBuildings[1]]}" alt="${randomBuildings[1]}"> ${randomBuildings[1]}`;
+  popupOverlay.style.display = 'flex';
+
+  const buildBtn1 = document.getElementById('buildBtnOption1');
+  const buildBtn2 = document.getElementById('buildBtnOption2');
+  const controller = new AbortController();
+  
+  buildBtn1.addEventListener('click', () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[0]);
+    popupOverlay.style.display = 'none';
+    selectedCells = [];
+    controller.abort();
+  }, { signal: controller.signal });
+
+  buildBtn2.addEventListener('click', () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[1]);
+    popupOverlay.style.display = 'none';
+    selectedCells = [];
+    controller.abort();
+  }, { signal: controller.signal });
+}
+
+function demolish() {
+  if (selectedCells.length > 0) {
+    const cell = selectedCells[0];
+    cell.style.background = '';
+    if (cell.classList.contains('occupied')) {
+      cell.classList.remove('occupied');
+      cell.classList.remove(cell.classList[1]);
+      cell.innerHTML = '';
+      turn++;
+      builtBuildings--;
+      calculateScore();
+      updateInfo();
+      selectedCells = [];
+    } else {
+      alert('No building to demolish on this cell.');
+    }
+  }
+}
+
 function updateInfo() {
-  coinsEl.textContent = coins;
+  coinsEl.textContent = coins === Infinity ? '∞' : coins;
   scoreEl.textContent = score;
   turnEl.textContent = turn;
-  if (coins <= 0 || builtBuildings === 400) {
-    end();
+  if (builtBuildings === gridSize * gridSize) {
+    expandGrid();
   }
 }
 
@@ -119,106 +172,82 @@ function isAdjacent(x, y) {
 }
 
 function placeBuilding(x, y, buildingType) {
-  if (coins <= 0) {
-    alert('No more coins left to build.');
-    return;
-  }
-
   const cell = document.querySelector(`.grid-cell[data-x='${x}'][data-y='${y}']`);
   cell.classList.add(buildingType, 'occupied');
-  cell.textContent = buildingType;
+  cell.innerHTML = `<img src="${buildingImages[buildingType]}" alt="${buildingType}">`;
 
-  coins--;
   turn++;
   builtBuildings++;
   calculateScore();
-  upkeep();
   updateInfo();
-  expandGridIfNeeded(x, y);
-}
-
-function expandGridIfNeeded(x, y) {
-  if (x === 0 || y === 0 || x === gridSize - 1 || y === gridSize - 1) {
-    if (gridSize === 5) {
-      gridSize = 15;
-    } else if (gridSize === 15) {
-      gridSize = 25;
-    }
-    initializeGrid(gridSize);
+  if (x == 0 || y == 0 || x == gridSize - 1 || y == gridSize - 1) {
+    expandGrid();
   }
 }
 
-function demolish() {
-  if (coins <= 0) {
-    alert('No more coins left to demolish.');
-    return;
-  }
-
-  if (selectedCells.length > 0) {
-    const cell = selectedCells[0];
-    cell.style.background = '';
-    if (cell.classList.contains('occupied')) {
-      cell.classList.remove('occupied');
-      cell.classList.remove(cell.classList[1]);
-      cell.textContent = '';
-      coins--;
-      turn++;
-      builtBuildings--;
-      calculateScore();
-      upkeep();
-      updateInfo();
-      selectedCells = [];
-    } else {
-      alert('No building to demolish on this cell.');
-    }
-  }
+function expandGrid() {
+  gridSize += 10; // Expand by 10 rows and columns
+  initializeGrid(gridSize);
 }
 
 function calculateScore() {
   score = 0;
   const cells = document.querySelectorAll('.grid-cell.occupied');
-  const industryCount = document.querySelectorAll('.I').length;
+  const industryCount = document.querySelectorAll('.Industry').length;
 
   cells.forEach(cell => {
     const x = parseInt(cell.dataset.x);
     const y = parseInt(cell.dataset.y);
-    const buildingType = cell.textContent;
+    const buildingType = cell.classList[1];
 
     switch (buildingType) {
-      case 'R':
+      case 'Residential':
         let adjacentR = 0;
         let adjacentC = 0;
         let adjacentO = 0;
         let adjacentI = 0;
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'R') adjacentR++;
-          if (adj === 'C') adjacentC++;
-          if (adj === 'O') adjacentO++;
-          if (adj === 'I') adjacentI++;
+          if (adj === 'Residential') adjacentR++;
+          if (adj === 'Commercial') adjacentC++;
+          if (adj === 'Park') adjacentO++;
+          if (adj === 'Industry') adjacentI++;
         });
-        score += adjacentI > 0 ? 1 : adjacentR + adjacentC + 2 * adjacentO;
+
+        if (adjacentI > 0) {
+          score += 1; // Residential next to industry scores 1 point
+        } else {
+          score += adjacentR + adjacentC + 2 * adjacentO;
+        }
         break;
-      case 'I':
+
+      case 'Industry':
         score += industryCount;
+        const adjacentResidentialI = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += adjacentResidentialI;
         break;
-      case 'C':
+
+      case 'Commercial':
         let adjacentCommercial = 0;
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'C') adjacentCommercial++;
+          if (adj === 'Commercial') adjacentCommercial++;
         });
         score += adjacentCommercial;
+        const adjacentResidentialC = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += adjacentResidentialC;
         break;
-      case 'O':
+
+      case 'Park':
         let adjacentPark = 0;
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'O') adjacentPark++;
+          if (adj === 'Park') adjacentPark++;
         });
         score += adjacentPark;
         break;
-      case 'road':
+
+      case 'Road':
         let connectedRoads = 0;
         for (let i = 0; i < gridSize; i++) {
-          if (document.querySelector(`.grid-cell[data-x='${x}'][data-y='${i}']`).textContent === 'road') {
+          if (document.querySelector(`.grid-cell[data-x='${x}'][data-y='${i}']`).classList.contains('Road')) {
             connectedRoads++;
           }
         }
@@ -226,44 +255,7 @@ function calculateScore() {
         break;
     }
   });
-}
-
-function upkeep() {
-  const cells = document.querySelectorAll('.grid-cell.occupied');
-  cells.forEach(cell => {
-    const x = parseInt(cell.dataset.x);
-    const y = parseInt(cell.dataset.y);
-    const buildingType = cell.textContent;
-
-    switch (buildingType) {
-      case 'R':
-        const adjacentR = getAdjacentBuildings(x, y).filter(adj => adj === 'R').length;
-        coins++;
-        if (adjacentR > 0) {
-          for (let i = 0; i < adjacentR; i++) {
-            coins--;
-          }
-        }
-        break;
-      case 'I':
-        coins += 2;
-        coins--;
-        break;
-      case 'C':
-        coins += 3;
-        coins -= 2;
-        break;
-      case 'O':
-        coins--;
-        break;
-      case 'road':
-        const adjacentRoad = getAdjacentBuildings(x, y).filter(adj => adj === 'road' || adj === 'R' || adj === 'C' || adj === 'I' || adj === 'O').length;
-        if (adjacentRoad === 0) {
-          coins--;
-        }
-        break;
-    }
-  });
+  scoreEl.textContent = score;
 }
 
 function getAdjacentBuildings(x, y) {
@@ -278,42 +270,8 @@ function getAdjacentBuildings(x, y) {
     const nx = x + dx;
     const ny = y + dy;
     const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
-    return adjacentCell ? adjacentCell.textContent : null;
+    return adjacentCell ? adjacentCell.classList[1] : null;
   }).filter(Boolean);
-}
-
-function end() {
-  const endScreen = document.createElement('div');
-  endScreen.className = 'end-screen';
-  endScreen.innerHTML = `
-    <div class="end-info">
-      <div><h2>Game Over!</h2></div>
-      <div><p>Your score is ${score}.</p></div>
-      <div>
-        <label for="name">Enter your name:</label>
-        <input type="text" id="name" placeholder="Optional">
-      </div>
-      <div class="end-button">
-        <button onclick="submitScore()">Submit Score</button>
-        <button id="end">Back to Home</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(endScreen);
-
-  document.getElementById('end').addEventListener('click', () => {
-    window.location.href = '../index.html';
-  });
-}
-
-function submitScore() {
-  const nameInput = document.getElementById('name');
-  const name = nameInput.value.trim() || 'Anonymous';
-  const scoreData = { name, score };
-  localStorage.setItem('scoreData', JSON.stringify(scoreData));
-  nameInput.addEventListener('click', () => {
-    window.location.href = '../index.html';
-  });
 }
 
 // Start the game

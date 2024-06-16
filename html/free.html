@@ -7,32 +7,34 @@
     <title>Ngee Ann City Game - Free Play Mode</title>
 </head>
 <body>
-    
-    <div class="container">
-        <h1>Ngee Ann City Game</h1>
-        <p>Free Play Mode</p>
-        <div class="info">
-          <div>Coins: <span id="coins">∞</span></div>
-          <div>Score: <span id="score">0</span></div>
-          <div>Turn: <span id="turn">1</span></div>
-        </div>
-        <div class="grid-container">
-          <!-- Grid cells will be generated here -->
-        </div>
-        <div class="controls">
-          <button id="build-btn">Build</button>
-          <button id="next-btn">Next</button>
-          <button id="leaderboard-btn">Leaderboard</button>
-          <a href="./freerule.html"><button id="help-btn">Help</button></a>
-        </div>
-        <div class="info">
-          <p>Coins: <span id="coins">∞</span></p>
-          <p>Score: <span id="score">0</span></p>
-          <p>Profit: <span id="profit">0</span></p>
-          <p>Upkeep: <span id="upkeep">0</span></p>
-        </div>
-    </div>
 
-    <script src="../javascript/free.js"></script>
+  <div class="container">
+    <h1>Ngee Ann City Game</h1>
+    <p>Free Play Mode</p>
+    <div class="info">
+      <div>Coins: <span id="coins">∞</span></div>
+      <div>Score: <span id="score">0</span></div>
+      <div>Turn: <span id="turn">1</span></div>
+    </div>
+    <div class="grid-container">
+      <!-- Grid cells will be generated here -->
+    </div>
+    <div class="controls">
+      <button id="build-btn">Build</button>
+      <button id="demolish-btn">Demolish</button>
+      <button id="leaderboard-btn">Leaderboard</button>
+      <a href="./freerule.html"><button id="help-btn">Help</button></a>
+    </div>
+  </div>
+  <div id="popupOverlay" class="overlay">
+    <h2 class="popup-heading">Choose a building to build</h2>
+    <div class="popup">
+      <div class="options">
+        <div class="option" id="buildBtnOption1"><span id="buildOption1"></span></div>
+        <div class="option" id="buildBtnOption2"><span id="buildOption2"></span></div>
+      </div>
+    </div>
+  </div>
+  <script src="../javascript/free.js"></script>
 </body>
 </html>

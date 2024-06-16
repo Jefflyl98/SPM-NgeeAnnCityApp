@@ -25,11 +25,8 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(5, 30px);
-  grid-template-rows: repeat(5, 30px);
   grid-gap: 1px;
   margin: 20px 0;
-  justify-content: center; /* Center the grid */
 }
 
 .grid-container div {
@@ -42,12 +39,20 @@ body {
   cursor: pointer;
 }
 
+.grid-container div img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.grid-container div:hover {
+  background-color: black;
+}
+
 .controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-  width: 100%; /* Ensure controls take full width */
 }
 
 button {
@@ -62,30 +67,178 @@ button {
 
 button:hover {
   opacity: 0.8;
+  background-color: black;
+  color: white;
 }
 
 .info {
-  display:flex;
+  display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  width: 100%;
 }
 
-.grid-container .R {
+.grid-container .Residential {
   background-color: #ffa;
 }
 
-.grid-container .I {
+.grid-container .Industry {
   background-color: #aaf;
 }
 
-.grid-container .C {
+.grid-container .Commercial {
   background-color: #afa;
 }
 
-.grid-container .O {
+.grid-container .Park {
   background-color: rgb(241, 170, 255);
 }
 
-.grid-container .road {
+.grid-container .Road {
   background-color: #4e4e4e;
+  color: white;
+}
+
+.popup-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  display: none;
+}
+
+.popup-form h2 {
+  margin-top: 0;
+}
+
+.popup-form form {
+  display: flex;
+  justify-content: space-between;
+}
+
+.popup-form button {
+  display: block;
+  margin-bottom: 10px;
+  width: 40%;
+}
+
+.popup-form button[type="button"] {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.end-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.end-screen .end-info {
+  width: 50%;
+  height: 50%;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.end-button {
+  display: flex;
+  flex-direction: row;
+}
+
+.end-screen h1 {
+  font-size: 36px;
+  color: #fff;
+}
+
+.end-screen p {
+  font-size: 24px;
+  color: #fff;
+}
+
+.end-screen button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 0px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.end-screen button:hover {
+  background-color: #3e8e41;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.popup-heading {
+  margin-bottom: 20px;
+  color: white;
+  font-size: 24px;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 90%; /* Change this width to adjust the size */
+  max-width: 400px; /* Max width for larger screens */
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.option {
+  flex: 1;
+  background-color: #ddd;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.option img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.option:hover {
+  background-color: #ccc;
 }
