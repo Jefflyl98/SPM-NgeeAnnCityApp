@@ -1,16 +1,4 @@
-const gridContainer = document.querySelector('.grid-container');
-const buildBtn = document.getElementById('build-btn');
-const demolishBtn = document.getElementById('demolish-btn');
-const leaderboardBtn = document.getElementById('leaderboard-btn');
-const helpBtn = document.getElementById('help-btn');
-const saveBtn = document.getElementById('save-btn');
-const loadBtn = document.getElementById('load-btn');
-const coinsEl = document.getElementById('coins');
-const scoreEl = document.getElementById('score');
-const turnEl = document.getElementById('turn');
-const popupOverlay = document.getElementById('popupOverlay');
-
-let coins = Infinity;  // Unlimited coins for Free Play mode
+let coins = Infinity; // Infinite coins for free play
 let score = 0;
 let turn = 1;
 let builtBuildings = 0;
@@ -24,13 +12,49 @@ let buildingImages = {
   'Road': '../buildinggraphics/road.png'
 };
 let selectedCells = [];
-let gridSize = 5;  // Start with a 5x5 grid
-let existingCells = []; // Store existing cells
+let gridSize = 5; // Initial grid size
+let existingCells = []; // Array to store existing cells on the grid
 
-initializeGrid(gridSize);
+const gridContainer = document.querySelector('.grid-container');
+const buildBtn = document.getElementById('build-btn');
+const demolishBtn = document.getElementById('demolish-btn');
+const leaderboardBtn = document.getElementById('leaderboard-btn');
+const helpBtn = document.getElementById('help-btn');
+const coinsEl = document.getElementById('coins');
+const scoreEl = document.getElementById('score');
+const turnEl = document.getElementById('turn');
+const popupOverlay = document.getElementById('popupOverlay');
+const saveBtn = document.getElementById('save-btn');
 
-// Update display
-updateInfo();
+// Generate grid based on saved or default size
+function initializeGrid(size) {
+  gridContainer.innerHTML = ''; // Clear existing grid
+  gridContainer.style.gridTemplateColumns = `repeat(${size}, 50px)`;
+  gridContainer.style.gridTemplateRows = `repeat(${size}, 50px)`;
+
+  existingCells = []; // Reset existing cells array
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const cell = document.createElement('div');
+      cell.textContent = ' ';
+      cell.dataset.x = x;
+      cell.dataset.y = y;
+      cell.classList.add('grid-cell');
+      cell.addEventListener('click', () => {
+        if (!selectedCells.includes(cell)) {
+          if (selectedCells.length > 0) {
+            selectedCells[0].style.background = '';
+          }
+          selectedCells = [cell];
+          cell.style.background = 'red';
+        }
+      });
+      gridContainer.appendChild(cell);
+      existingCells.push({ x, y });
+    }
+  }
+}
 
 // Add event listeners for buttons
 buildBtn.addEventListener('click', () => {
@@ -49,50 +73,16 @@ buildBtn.addEventListener('click', () => {
 });
 
 demolishBtn.addEventListener('click', demolish);
-saveBtn.addEventListener('click', saveGameState);
-loadBtn.addEventListener('click', loadGameState);
 
-function initializeGrid(size) {
-  existingCells = Array.from(document.querySelectorAll('.grid-cell')).map(cell => ({
-    x: parseInt(cell.dataset.x),
-    y: parseInt(cell.dataset.y),
-    classes: cell.className,
-    content: cell.innerHTML
-  }));
+leaderboardBtn.addEventListener('click', () => {
+  alert('To be implemented: Leaderboard feature');
+});
 
-  const offset = (size - 5) / 2;
-  gridContainer.innerHTML = '';  // Clear the grid
-  gridContainer.style.gridTemplateColumns = `repeat(${size}, 30px)`;
-  gridContainer.style.gridTemplateRows = `repeat(${size}, 30px)`;
+helpBtn.addEventListener('click', () => {
+  alert('To be implemented: Help feature');
+});
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const cell = document.createElement('div');
-      cell.textContent = ' ';
-      cell.dataset.x = x;
-      cell.dataset.y = y;
-      cell.classList.add('grid-cell');
-      cell.addEventListener('click', () => {
-        if (!selectedCells.includes(cell)) {
-          if (selectedCells.length > 0) {
-            selectedCells[0].style.background = '';
-          }
-          selectedCells = [cell];
-          cell.style.background = 'red';
-        }
-      });
-
-      // Restore existing buildings
-      const existingCell = existingCells.find(c => c.x === x - offset && c.y === y - offset);
-      if (existingCell) {
-        cell.className = existingCell.classes;
-        cell.innerHTML = existingCell.content;
-      }
-
-      gridContainer.appendChild(cell);
-    }
-  }
-}
+saveBtn.addEventListener('click', saveGame);
 
 function showPopup() {
   const randomBuildings = getRandomBuildings();
@@ -102,24 +92,25 @@ function showPopup() {
 
   const buildBtn1 = document.getElementById('buildBtnOption1');
   const buildBtn2 = document.getElementById('buildBtnOption2');
-  const controller = new AbortController();
-  
+
   buildBtn1.addEventListener('click', () => {
     placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[0]);
     popupOverlay.style.display = 'none';
     selectedCells = [];
-    controller.abort();
-  }, { signal: controller.signal });
+  });
 
   buildBtn2.addEventListener('click', () => {
     placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[1]);
     popupOverlay.style.display = 'none';
     selectedCells = [];
-    controller.abort();
-  }, { signal: controller.signal });
+  });
 }
 
 function demolish() {
+  if (coins <= 0) {
+    alert('No more coins left to demolish.');
+    return;
+  }
   if (selectedCells.length > 0) {
     const cell = selectedCells[0];
     cell.style.background = '';
@@ -127,9 +118,11 @@ function demolish() {
       cell.classList.remove('occupied');
       cell.classList.remove(cell.classList[1]);
       cell.innerHTML = '';
+      coins--;
       turn++;
       builtBuildings--;
       calculateScore();
+      upkeep();
       updateInfo();
       selectedCells = [];
     } else {
@@ -142,9 +135,6 @@ function updateInfo() {
   coinsEl.textContent = coins === Infinity ? '∞' : coins;
   scoreEl.textContent = score;
   turnEl.textContent = turn;
-  if (builtBuildings === gridSize * gridSize) {
-    expandGrid();
-  }
 }
 
 function getRandomBuildings() {
@@ -176,22 +166,44 @@ function isAdjacent(x, y) {
 }
 
 function placeBuilding(x, y, buildingType) {
+  if (coins <= 0) {
+    alert('No more coins left to build.');
+    return;
+  }
+
   const cell = document.querySelector(`.grid-cell[data-x='${x}'][data-y='${y}']`);
   cell.classList.add(buildingType, 'occupied');
   cell.innerHTML = `<img src="${buildingImages[buildingType]}" alt="${buildingType}">`;
 
+  coins--;
   turn++;
   builtBuildings++;
   calculateScore();
+  upkeep();
   updateInfo();
-  if (x == 0 || y == 0 || x == gridSize - 1 || y == gridSize - 1) {
-    expandGrid();
-  }
 }
 
-function expandGrid() {
-  gridSize += 10; // Expand by 10 rows and columns
-  initializeGrid(gridSize);
+function saveGame() {
+  const saveData = {
+    coins,
+    score,
+    turn,
+    builtBuildings,
+    selectedCells: selectedCells.map(cell => ({
+      x: cell.dataset.x,
+      y: cell.dataset.y
+    })),
+    gridSize,
+    existingCells: existingCells.map(cell => ({
+      x: cell.x,
+      y: cell.y,
+      buildingType: document.querySelector(`.grid-cell[data-x='${cell.x}'][data-y='${cell.y}']`).classList[1]
+    }))
+  };
+
+  localStorage.setItem('saveDataFree', JSON.stringify(saveData));
+  alert('Game saved successfully!');
+  window.location.href = '../index.html';
 }
 
 function calculateScore() {
@@ -225,30 +237,30 @@ function calculateScore() {
         break;
 
       case 'Industry':
+        // Score 1 point per industry in the city
         score += industryCount;
-        const adjacentResidentialI = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
-        coins += adjacentResidentialI;
         break;
 
       case 'Commercial':
-        let adjacentCommercial = 0;
+        // Score 1 point per adjacent residential building
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'Commercial') adjacentCommercial++;
+          if (adj === 'Residential') {
+            score += 1;
+          }
         });
-        score += adjacentCommercial;
-        const adjacentResidentialC = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
-        coins += adjacentResidentialC;
         break;
 
       case 'Park':
-        let adjacentPark = 0;
+        // Score 2 points per adjacent residential building
         getAdjacentBuildings(x, y).forEach(adj => {
-          if (adj === 'Park') adjacentPark++;
+          if (adj === 'Residential') {
+            score += 2;
+          }
         });
-        score += adjacentPark;
         break;
 
       case 'Road':
+        // Score 1 point per connected road in the same row
         let connectedRoads = 0;
         for (let i = 0; i < gridSize; i++) {
           if (document.querySelector(`.grid-cell[data-x='${x}'][data-y='${i}']`).classList.contains('Road')) {
@@ -257,12 +269,17 @@ function calculateScore() {
         }
         score += connectedRoads;
         break;
+
+      default:
+        break;
     }
   });
+
   scoreEl.textContent = score;
 }
 
 function getAdjacentBuildings(x, y) {
+  const adjacentBuildings = [];
   const adjacentCoords = [
     { dx: -1, dy: 0 },
     { dx: 1, dy: 0 },
@@ -270,48 +287,67 @@ function getAdjacentBuildings(x, y) {
     { dx: 0, dy: 1 }
   ];
 
-  return adjacentCoords.map(({ dx, dy }) => {
-    const nx = x + dx;
-    const ny = y + dy;
+  adjacentCoords.forEach(({ dx, dy }) => {
+    const nx = parseInt(x) + dx;
+    const ny = parseInt(y) + dy;
     const adjacentCell = document.querySelector(`.grid-cell[data-x='${nx}'][data-y='${ny}']`);
-    return adjacentCell ? adjacentCell.classList[1] : null;
-  }).filter(Boolean);
+    if (adjacentCell && adjacentCell.classList.contains('occupied')) {
+      adjacentBuildings.push(adjacentCell.classList[1]);
+    }
+  });
+
+  return adjacentBuildings;
 }
 
-function saveGameState() {
-  const gameState = {
-    coins,
-    score,
-    turn,
-    builtBuildings,
-    gridSize,
-    existingCells: Array.from(document.querySelectorAll('.grid-cell')).map(cell => ({
-      x: parseInt(cell.dataset.x),
-      y: parseInt(cell.dataset.y),
-      classes: cell.className,
-      content: cell.innerHTML
-    }))
-  };
-  localStorage.setItem('gameState', JSON.stringify(gameState));
-  alert('Game saved!');
+function upkeep() {
+  const cells = document.querySelectorAll('.grid-cell.occupied');
+  const industryCount = document.querySelectorAll('.Industry').length;
+
+  cells.forEach(cell => {
+    const buildingType = cell.classList[1];
+
+    switch (buildingType) {
+      case 'Residential':
+        // Residential buildings cost 1 coin per turn in upkeep
+        coins -= 1;
+        break;
+
+      case 'Industry':
+        // Industry buildings generate 2 coins per turn
+        coins += 2;
+        break;
+
+      case 'Commercial':
+        // Commercial buildings generate 1 coin per adjacent residential building
+        const x = parseInt(cell.dataset.x);
+        const y = parseInt(cell.dataset.y);
+        const adjacentResidentialCount = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += adjacentResidentialCount;
+        break;
+
+      case 'Park':
+        // Parks generate 1 coin per 2 adjacent residential buildings
+        const parkAdjacency = getAdjacentBuildings(x, y).filter(adj => adj === 'Residential').length;
+        coins += Math.floor(parkAdjacency / 2);
+        break;
+
+      case 'Road':
+        // Road segments cost 1 coin per turn
+        coins -= 1;
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  coinsEl.textContent = coins;
 }
 
-function loadGameState() {
-  const savedState = localStorage.getItem('gameState');
-  if (savedState) {
-    const gameState = JSON.parse(savedState);
-    coins = gameState.coins;
-    score = gameState.score;
-    turn = gameState.turn;
-    builtBuildings = gameState.builtBuildings;
-    gridSize = gameState.gridSize;
-    existingCells = gameState.existingCells;
-    initializeGrid(gridSize);
-    updateInfo();
-  } else {
-    alert('No saved game found.');
-  }
-}
+// Initialize the grid on page load
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGrid(gridSize);
+});
 
-// Start the game
+// Ensure the initial game state is displayed
 updateInfo();
