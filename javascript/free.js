@@ -90,20 +90,17 @@ function showPopup() {
   document.getElementById('buildOption2').innerHTML = `<img src="${buildingImages[randomBuildings[1]]}" alt="${randomBuildings[1]}"> ${randomBuildings[1]}`;
   popupOverlay.style.display = 'flex';
 
-  const buildBtn1 = document.getElementById('buildBtnOption1');
-  const buildBtn2 = document.getElementById('buildBtnOption2');
-
-  buildBtn1.addEventListener('click', () => {
+  document.getElementById('buildBtnOption1').onclick = () => {
     placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[0]);
     popupOverlay.style.display = 'none';
     selectedCells = [];
-  });
+  };
 
-  buildBtn2.addEventListener('click', () => {
+  document.getElementById('buildBtnOption2').onclick = () => {
     placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, randomBuildings[1]);
     popupOverlay.style.display = 'none';
     selectedCells = [];
-  });
+  };
 }
 
 function demolish() {
@@ -347,7 +344,52 @@ function upkeep() {
 // Initialize the grid on page load
 document.addEventListener('DOMContentLoaded', () => {
   initializeGrid(gridSize);
+  // Check if there's saved data and load it
+  const savedData = localStorage.getItem('saveDataFree');
+  if (savedData) {
+    loadGame(JSON.parse(savedData));
+  }
+  updateInfo();
 });
 
-// Ensure the initial game state is displayed
-updateInfo();
+function loadGame(savedData) {
+  coins = savedData.coins;
+  score = savedData.score;
+  turn = savedData.turn;
+  builtBuildings = savedData.builtBuildings;
+  selectedCells = savedData.selectedCells.map(cell => {
+    const cellElement = document.querySelector(`.grid-cell[data-x='${cell.x}'][data-y='${cell.y}']`);
+    cellElement.style.background = 'red';
+    return cellElement;
+  });
+  gridSize = savedData.gridSize;
+  initializeGrid(gridSize);
+  existingCells = savedData.existingCells;
+  existingCells.forEach(cell => {
+    const cellElement = document.querySelector(`.grid-cell[data-x='${cell.x}'][data-y='${cell.y}']`);
+    cellElement.classList.add(cell.buildingType, 'occupied');
+    cellElement.innerHTML = `<img src="${buildingImages[cell.buildingType]}" alt="${cell.buildingType}">`;
+  });
+}
+
+function expandGrid() {
+  const newSize = gridSize + 10;
+  initializeGrid(newSize);
+  gridSize = newSize;
+  existingCells.forEach(cell => {
+    const cellElement = document.querySelector(`.grid-cell[data-x='${cell.x}'][data-y='${cell.y}']`);
+    cellElement.classList.add(cell.buildingType, 'occupied');
+    cellElement.innerHTML = `<img src="${buildingImages[cell.buildingType]}" alt="${cell.buildingType}">`;
+  });
+}
+
+// Add a listener to detect when the user clicks the edge to expand the grid
+gridContainer.addEventListener('click', (event) => {
+  if (event.target.classList.contains('grid-cell')) {
+    const x = parseInt(event.target.dataset.x);
+    const y = parseInt(event.target.dataset.y);
+    if (x === 0 || y === 0 || x === gridSize - 1 || y === gridSize - 1) {
+      expandGrid();
+    }
+  }
+});
