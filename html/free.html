@@ -7,37 +7,43 @@
     <title>Ngee Ann City Game - Free Play Mode</title>
 </head>
 <body>
-
-  <div class="container">
-    <h1>Ngee Ann City Game</h1>
-    <p>Free Play Mode</p>
-    <div class="info">
-      <div>Coins: <span id="coins">∞</span></div>
-      <div>Score: <span id="score">0</span></div>
-      <div>Turn: <span id="turn">1</span></div>
+    <div class="container">
+        <h1>Ngee Ann City Game</h1>
+        <p>Free Play Mode</p>
+        <div class="info">
+            <p>Score: <span id="score">0</span></p>
+            <p>Turn: <span id="turn">1</span></p>
+            <p>Coins: <span id="coins">∞</span></p>
+            <p>Profit: <span id="profit">0</span></p>
+            <p>Upkeep: <span id="upkeep">0</span></p>
+        </div>
+        <div class="grid-container">
+            <!-- Grid cells will be generated here -->
+        </div>
+        <div class="controls">
+            <button id="build-btn">Build</button>
+            <button id="demolish-btn">Demolish</button>
+            <button id="leaderboard-btn">Leaderboard</button>
+            <button id="save-btn">Save Game</button>
+            <button id="load-btn">Load Game</button>
+            <button id="logoff-btn">Log Off</button>
+            <a href="./freerule.html"><button id="help-btn">Help</button></a>
+        </div>
     </div>
-    <div class="grid-container">
-      <!-- Grid cells will be generated here -->
+    <div id="popupOverlay" class="overlay">
+        <h2 class="popup-heading">Choose a building to build</h2>
+        <div class="popup">
+            <button type="button" id="buildBtnOption1"><span id="buildOption1"></span></button>
+            <button type="button" id="buildBtnOption2"><span id="buildOption2"></span></button>
+        </div>
     </div>
-    <div class="controls">
-      <button id="build-btn">Build</button>
-      <button id="demolish-btn">Demolish</button>
-      <button id="leaderboard-btn">Leaderboard</button>
-      <button id="save-btn">Save Game</button>
-      <a href="./freehelp.html"><button id="help-btn">Help</button></a>
+    <div id="logoffOverlay" class="overlay">
+        <h2 class="popup-heading">Are you sure you want to log off?</h2>
+        <div class="popup">
+            <button id="confirm-logoff-btn">Yes</button>
+            <button id="cancel-logoff-btn">No</button>
+        </div>
     </div>
-  </div>
-
-  <div id="popupOverlay" class="overlay">
-    <h2 class="popup-heading">Choose a building to build</h2>
-    <div class="popup">
-      <div class="options">
-        <div class="option" id="buildBtnOption1"><span id="buildOption1"></span></div>
-        <div class="option" id="buildBtnOption2"><span id="buildOption2"></span></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="../javascript/free.js"></script>
+    <script src="../javascript/free.js"></script>
 </body>
 </html>
