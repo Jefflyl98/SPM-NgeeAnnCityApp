@@ -8,7 +8,7 @@ const scoreEl = document.getElementById('score');
 const turnEl = document.getElementById('turn');
 const popupOverlay = document.getElementById('popupOverlay');
 
-let coins = 16;
+let coins = 1;
 let score = 0;
 let turn = 0;
 let builtBuildings = 0;
@@ -191,14 +191,18 @@ function end() {
   });
 }
 
+let scoreDataCounter = localStorage.getItem('scoreDataCounter') || 0;
+
 function submitScore() {
   const nameInput = document.getElementById('name');
   const name = nameInput.value.trim() || 'Anonymous';
   const scoreData = { name, score };
-  localStorage.setItem('scoreData', JSON.stringify(scoreData));
-  nameInput.addEventListener('click', () => {
-    window.location.href = '../index.html';
-  });
+  const key = `scoreData${scoreDataCounter}`;
+  localStorage.setItem(key, JSON.stringify(scoreData));
+  console.log(localStorage.getItem(key));
+  scoreDataCounter++;
+  localStorage.setItem('scoreDataCounter', scoreDataCounter);
+  window.location.href = '../index.html';
 }
 
 function calculateScore() {
@@ -307,8 +311,10 @@ function upkeep() {
         break;
       case 'road':
         const adjacentRoad = getAdjacentBuildings(x, y).filter(adj => adj === 'road' || adj === 'R' || adj === 'C' || adj === 'I' || adj === 'O').length;
-        if (adjacentRoad === 0) {
-          coins--;
+        if (adjacentRoad < 4) {
+          for (let j = adjacentRoad; j > 0; j--){
+            coins--;
+          }
         }
         break;
     }
