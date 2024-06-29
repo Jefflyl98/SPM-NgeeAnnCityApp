@@ -8,7 +8,7 @@ const scoreEl = document.getElementById('score');
 const turnEl = document.getElementById('turn');
 const popupOverlay = document.getElementById('popupOverlay');
 
-let coins = 1;
+let coins = 16;
 let score = 0;
 let turn = 0;
 let builtBuildings = 0;
