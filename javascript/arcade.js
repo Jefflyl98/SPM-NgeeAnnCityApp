@@ -337,5 +337,51 @@ function getAdjacentBuildings(x, y) {
   }).filter(Boolean);
 }
 
+document.getElementById('save-btn').addEventListener('click', () => {
+  const grid = document.querySelector('.grid-container').innerHTML;
+  console.log(grid);
+  const saveData = {
+    coins,
+    score,
+    turn,
+    grid
+  };
+  localStorage.setItem('saveData', JSON.stringify(saveData));
+  console.log('Game saved!');
+  console.log(localStorage.getItem('saveData'));
+});
+
+document.getElementById('load-btn').addEventListener('click', loadGame);
+
+function loadGame() {
+  const saveData = localStorage.getItem('saveData');
+  if (saveData) {
+    const { coins: savedCoins, score: savedScore, turn: savedTurn, grid } = JSON.parse(saveData);
+    // Restore game state
+    coins = savedCoins;
+    score = savedScore;
+    turn = savedTurn;
+    gridContainer.innerHTML = grid;
+    // Re-add event listeners to grid cells
+    const gridCells = gridContainer.children;
+    for (const cell of gridCells) {
+      cell.addEventListener('click', () => {
+        // Re-add click event listener to grid cells
+        if (!selectedCells.includes(cell)) {
+          if (selectedCells.length > 0) {
+            selectedCells[0].style.background = '';
+          }
+          selectedCells = [cell];
+          cell.style.background = 'red';
+        }
+      });
+    }
+    updateInfo();
+    console.log('Game loaded!');
+  } else {
+    console.log('No saved game found.');
+  }
+}
+
 // Start the game
 updateInfo();
