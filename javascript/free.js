@@ -83,17 +83,26 @@ function expandGrid() {
 }
 
 function showPopup() {
-  const [option1, option2] = getRandomBuildings();
-  document.getElementById('buildOption1').innerHTML = `<img src="${buildingImages[option1]}" alt="${option1}"> ${option1}`;
-  document.getElementById('buildOption2').innerHTML = `<img src="${buildingImages[option2]}" alt="${option2}"> ${option2}`;
   popupOverlay.style.display = 'flex';
 
-  document.getElementById('buildBtnOption1').onclick = () => {
-    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, option1);
+  document.getElementById('buildResidentialBtn').onclick = () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, 'Residential');
     popupOverlay.style.display = 'none';
   };
-  document.getElementById('buildBtnOption2').onclick = () => {
-    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, option2);
+  document.getElementById('buildIndustryBtn').onclick = () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, 'Industry');
+    popupOverlay.style.display = 'none';
+  };
+  document.getElementById('buildCommercialBtn').onclick = () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, 'Commercial');
+    popupOverlay.style.display = 'none';
+  };
+  document.getElementById('buildParkBtn').onclick = () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, 'Park');
+    popupOverlay.style.display = 'none';
+  };
+  document.getElementById('buildRoadBtn').onclick = () => {
+    placeBuilding(selectedCells[0].dataset.x, selectedCells[0].dataset.y, 'Road');
     popupOverlay.style.display = 'none';
   };
 }
@@ -203,15 +212,6 @@ function hideLogoffOverlay() {
 
 function logOff() {
   window.location.href = '../index.html';
-}
-
-function getRandomBuildings() {
-  const randomIndex1 = Math.floor(Math.random() * availableBuildings.length);
-  let randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
-  while (randomIndex1 === randomIndex2) {
-    randomIndex2 = Math.floor(Math.random() * availableBuildings.length);
-  }
-  return [availableBuildings[randomIndex1], availableBuildings[randomIndex2]];
 }
 
 function calculateScore() {
