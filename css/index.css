@@ -17,6 +17,7 @@ body {
 }
 
 
+
 .main-wrapper {
   display: flex;
   justify-content: center;
@@ -68,8 +69,8 @@ button:hover {
 }
 
 .arcade-button {
-  background-color: #6495ED;
-  color: #fff;
+  background-color: #99BEE0;
+  color: #000;
 }
 
 .free-play-button {
@@ -78,8 +79,8 @@ button:hover {
 }
 
 .load-game-button {
-  background-color: #6495ED;
-  color: #fff;
+  background-color: #99BEE0;
+  color: #000;
 }
 
 .leaderboard-button {
@@ -88,12 +89,12 @@ button:hover {
 }
 
 .help-button {
-  background-color: #6495ED;
-  color: #fff;
+  background-color: #99BEE0;
+  color: black;
 }
 
 .login-button {
-  background-color: #FF4500;
+  background-color: #fd7e50;
   color: #fff;
 }
 
@@ -118,7 +119,7 @@ button:hover {
 }
 
 .popup {
-  background: white;
+  background: #eeeeee;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -148,16 +149,18 @@ button:hover {
 }
 
 .popup button#loginSubmitBtn {
-  background-color: #4CAF50;
-  color: #fff;
+  background-color: #99BEE0;
+  color: #000;
 }
 
 .popup button#loginCancelBtn {
-  background-color: #4CAF50;
-  color: #fff;
+  background-color: #99BEE0;
+  color: #000;
   margin-top: 10px;
 }
 
-.popup button:hover {
-  background-color: #3e8e41;
+.popup button#loginSubmitBtn:hover,
+.popup button#loginCancelBtn:hover {
+  background-color: #26629b;
+  color: white;
 }

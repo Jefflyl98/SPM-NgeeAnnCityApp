@@ -3,7 +3,7 @@
 }
 
 body {
-  background-color: #f2f2f2;
+  background-color: #e0bb99;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
@@ -13,11 +13,12 @@ body {
 }
 
 .container {
-  background-color: #fff;
+  background: linear-gradient(to bottom right, #383838, #99BEE0);
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  color: white;
 }
 
 .grid-container {
@@ -30,7 +31,7 @@ body {
 
 .grid-container div {
   background-color: #ddd;
-  border: 1px solid #ccc;
+  border: 1px solid #afafaf;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,6 +63,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-decoration: none;
 }
 
 button:hover {
@@ -148,7 +150,7 @@ button:hover {
 .end-screen .end-info {
   width: 50%;
   height: 50%;
-  background-color: rgb(177, 177, 177);
+  background: #2e2e2e;
   color: white;
   display: flex;
   flex-direction: column;
@@ -163,18 +165,18 @@ button:hover {
 }
 
 .end-screen h1 {
-  font-size: 36px;
-  color: #fff;
+  font-size: 50px;
+  color: white;
 }
 
 .end-screen p {
-  font-size: 24px;
-  color: #fff;
+  font-size: 30px;
+  color: white;
 }
 
 .end-screen button {
-  background-color: #4CAF50;
-  color: #fff;
+  background-color: #99BEE0;
+  color: black;
   padding: 10px 20px;
   margin: 20px 10px 0px;
   border: none;
@@ -183,7 +185,8 @@ button:hover {
 }
 
 .end-screen button:hover {
-  background-color: #3e8e41;
+  background: #4d99e0;
+  color: white;
 }
 
 .overlay {
@@ -211,8 +214,8 @@ button:hover {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: center;
-  width: 90%; /* Change this width to adjust the size */
-  max-width: 400px; /* Max width for larger screens */
+  width: 90%; 
+  max-width: 400px; 
 }
 
 .options {
