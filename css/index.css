@@ -1,19 +1,47 @@
 body {
-  background-color: #f2f2f2;
+  background-color: #e0bb99;
   font-family: Arial, sans-serif;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
   margin: 0;
 }
 
-.container {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.page-title {
   text-align: center;
+  padding-bottom: 3%;
+  font-size: 64px;
+  color: rgb(46, 46, 46);
+}
+
+
+.main-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+  flex-direction: column;
+  margin-left: 100px;
+}
+
+.model-image {
+  width: 500px;
+  height: 400px;
+  background-image: url('../buildinggraphics/3dmodel.png');
+  background-size: cover;
+  background-position: center;
+  margin-left: 10%;
 }
 
 h1 {
@@ -21,14 +49,18 @@ h1 {
 }
 
 button {
+  text-decoration: none;
   display: block;
-  margin: 10px auto;
-  padding: 12px 20px;
-  font-size: 16px;
+  margin: 0px auto;
+  margin-top: 5%;
+  font-size: 24px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 300px;
+  height: 50px;
+  box-shadow: 0 0 0 2px #000;
 }
 
 button:hover {
@@ -82,17 +114,18 @@ button:hover {
 .popup-heading {
   margin-bottom: 20px;
   color: white;
-  font-size: 24px;
+  font-size: 30px;
 }
 
 .popup {
   background: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 
@@ -101,16 +134,28 @@ button:hover {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .popup button {
-  background-color: #4CAF50;
-  color: #fff;
-  padding: 10px;
+  font-size: 24px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  box-sizing: border-box;
+}
+
+.popup button#loginSubmitBtn {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.popup button#loginCancelBtn {
+  background-color: #4CAF50;
+  color: #fff;
+  margin-top: 10px;
 }
 
 .popup button:hover {
