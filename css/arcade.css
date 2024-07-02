@@ -14,7 +14,7 @@ body {
 
 .container {
   background: linear-gradient(to bottom right, #383838, #99BEE0);
-  padding: 30px;
+  padding: 0px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -23,8 +23,8 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(20, 30px);
-  grid-template-rows: repeat(20, 30px);
+  grid-template-columns: repeat(20, 26px);
+  grid-template-rows: repeat(20, 24px);
   grid-gap: 1px;
   margin: 20px 0;
 }
