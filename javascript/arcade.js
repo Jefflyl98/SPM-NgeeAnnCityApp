@@ -372,7 +372,7 @@ function loadGame() {
             selectedCells[0].style.background = '';
           }
           selectedCells = [cell];
-          cell.style.background = 'red';
+          cell.style.background = 'red'
         }
       });
     }
