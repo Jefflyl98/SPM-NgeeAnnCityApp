@@ -3,17 +3,22 @@
 }
 
 body {
-  background-color: #e0bb99;
+  /* background-color: #e0bb99; */
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  background-image: url('../buildinggraphics/citygamebg.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: fit-content;
 }
 
 .container {
-  background: linear-gradient(to bottom right, #383838, #99BEE0);
+  background: #507D7D;
   padding: 0px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -243,4 +248,25 @@ button:hover {
 
 .option:hover {
   background-color: #ccc;
+}
+
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+#background-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  transform: translate(-50%, -50%);
 }

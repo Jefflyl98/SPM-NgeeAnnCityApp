@@ -65,11 +65,11 @@ button {
 }
 
 button:hover {
-  opacity: 0.8;
+  background-color: #99BEE0;
 }
 
 .arcade-button {
-  background-color: #99BEE0;
+  background-color: #D3D3D3;
   color: #000;
 }
 
@@ -79,7 +79,7 @@ button:hover {
 }
 
 .load-game-button {
-  background-color: #99BEE0;
+  background-color: #D3D3D3;
   color: #000;
 }
 
@@ -89,13 +89,20 @@ button:hover {
 }
 
 .help-button {
-  background-color: #99BEE0;
+  background-color: #D3D3D3;
   color: black;
 }
 
 .login-button {
-  background-color: #fd7e50;
-  color: #fff;
+  background-color: lightgreen;
+  opacity: 0.8;
+  color: #000;
+}
+
+
+.login-button:hover {
+  background-color: darkgreen;
+  color: #000;
 }
 
 /* Overlay styling */
