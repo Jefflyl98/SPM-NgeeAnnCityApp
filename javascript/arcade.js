@@ -338,50 +338,107 @@ function getAdjacentBuildings(x, y) {
 }
 
 document.getElementById('save-btn').addEventListener('click', () => {
-  const grid = document.querySelector('.grid-container').innerHTML;
-  console.log(grid);
+  const mode = 'arcade';  // or 'freePlay', depending on the current mode
   const saveData = {
+    mode,
     coins,
     score,
     turn,
-    grid
+    grid: document.querySelector('.grid-container').innerHTML
   };
-  localStorage.setItem('saveData', JSON.stringify(saveData));
-  console.log('Game saved!');
-  console.log(localStorage.getItem('saveData'));
+  console.log('Save Data:', saveData);  // Debugging line to check save data
+  const blob = new Blob([JSON.stringify(saveData)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'game-save.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 });
 
-document.getElementById('load-btn').addEventListener('click', loadGame);
 
-function loadGame() {
-  const saveData = localStorage.getItem('saveData');
-  if (saveData) {
-    const { coins: savedCoins, score: savedScore, turn: savedTurn, grid } = JSON.parse(saveData);
-    // Restore game state
-    coins = savedCoins;
-    score = savedScore;
-    turn = savedTurn;
-    gridContainer.innerHTML = grid;
-    // Re-add event listeners to grid cells
-    const gridCells = gridContainer.children;
-    for (const cell of gridCells) {
-      cell.addEventListener('click', () => {
-        // Re-add click event listener to grid cells
-        if (!selectedCells.includes(cell)) {
-          if (selectedCells.length > 0) {
-            selectedCells[0].style.background = '';
+document.getElementById('load-btn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+
+  input.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const saveData = JSON.parse(e.target.result);
+          console.log('Loaded Data:', saveData);  // Debugging line to check loaded data
+
+          // Check the game mode
+          if (saveData.mode === 'arcade') {
+            // Restore game state for arcade mode
+            coins = saveData.coins;
+          } else if (saveData.mode === 'freePlay') {
+            // Set coins to infinite for free play mode
+            coins = Infinity;
+          } else {
+            alert('Unknown game mode in the save file.');
+            return;
           }
-          selectedCells = [cell];
-          cell.style.background = 'red'
+
+          // Restore common game state variables
+          score = saveData.score;
+          turn = saveData.turn;
+
+          // Replace the grid HTML with the saved grid
+          document.querySelector('.grid-container').innerHTML = saveData.grid;
+
+          // Re-attach event listeners to the grid cells
+          const gridCells = document.querySelectorAll('.grid-cell');
+          gridCells.forEach(cell => {
+            cell.addEventListener('click', () => {
+              if (!selectedCells.includes(cell)) {
+                if (selectedCells.length > 0) {
+                  selectedCells[0].style.background = '';
+                }
+                selectedCells = [cell];
+                cell.style.background = 'red';
+              }
+            });
+          });
+
+          // Update the game information display
+          updateInfo();
+          console.log('Game loaded successfully!');
+        } catch (error) {
+          console.error('Error parsing the save file:', error);
+          alert('Failed to load the game. The save file may be corrupted.');
         }
-      });
+      };
+
+      reader.onerror = (error) => {
+        console.error('Error reading the file:', error);
+        alert('Failed to read the file. Please try again.');
+      };
+
+      reader.readAsText(file);
+    } else {
+      alert('No file selected.');
     }
-    updateInfo();
-    console.log('Game loaded!');
-  } else {
-    console.log('No saved game found.');
+  });
+
+  input.click();
+});
+
+function updateInfo() {
+  coinsEl.textContent = coins === Infinity ? '∞' : coins;
+  scoreEl.textContent = score;
+  turnEl.textContent = turn;
+  if (coins <= 0 || builtBuildings === 400) {
+    end();
   }
 }
+
 
 // Start the game
 updateInfo();

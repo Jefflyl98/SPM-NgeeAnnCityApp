@@ -36,11 +36,10 @@ let selectedCells = [];
 let existingCells = [];
 
 function initializeGrid(size) {
+  const gridContainer = document.querySelector('.grid-container');
   gridContainer.innerHTML = '';
-  gridContainer.style.gridTemplateColumns = `repeat(${size}, 50px)`;
-  gridContainer.style.gridTemplateRows = `repeat(${size}, 50px)`;
-  gridContainer.style.width = `${size * 50}px`;
-  gridContainer.style.height = `${size * 50}px`;
+  gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  gridContainer.style.gridTemplateRows = `repeat(${size}, 1fr)`;
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -54,17 +53,8 @@ function initializeGrid(size) {
   }
 }
 
-function selectCell(cell) {
-  if (!selectedCells.includes(cell)) {
-    if (selectedCells.length > 0) {
-      selectedCells[0].classList.remove('selected');
-    }
-    selectedCells = [cell];
-    cell.classList.add('selected');
-  }
-}
-
 function expandGrid() {
+  const expansionSizes = [30, 35]; // Example expansion sizes
   if (currentExpansion >= expansionSizes.length) return;
   const newSize = expansionSizes[currentExpansion];
   currentExpansion++;
@@ -80,6 +70,18 @@ function expandGrid() {
     cell.querySelector('img').style.width = '100%';
     cell.querySelector('img').style.height = '100%';
   });
+}
+
+
+
+function selectCell(cell) {
+  if (!selectedCells.includes(cell)) {
+    if (selectedCells.length > 0) {
+      selectedCells[0].classList.remove('selected');
+    }
+    selectedCells = [cell];
+    cell.classList.add('selected');
+  }
 }
 
 function showPopup() {
@@ -175,32 +177,109 @@ function demolish() {
   }
 }
 
-function saveGame() {
+document.getElementById('save-btn').addEventListener('click', () => {
   const saveData = {
-    score, turn, builtBuildings, gridSize, existingCells, currentExpansion
+    mode: 'freePlay',  // or 'arcade', depending on the current mode
+    coins,
+    score,
+    turn,
+    grid: document.querySelector('.grid-container').innerHTML
   };
-  localStorage.setItem('freePlaySave', JSON.stringify(saveData));
-  alert('Game saved successfully!');
-}
+  console.log('Save Data:', saveData);  // Debugging line to check save data
+  const blob = new Blob([JSON.stringify(saveData)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'game-save.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
 
-function loadGame() {
-  const savedData = JSON.parse(localStorage.getItem('freePlaySave'));
-  if (savedData) {
-    ({ score, turn, builtBuildings, gridSize, existingCells, currentExpansion } = savedData);
-    coins = Infinity;
-    initializeGrid(gridSize);
-    existingCells.forEach(({ x, y, type }) => {
-      const cell = document.querySelector(`.grid-cell[data-x='${x}'][data-y='${y}']`);
-      cell.classList.add(type, 'occupied');
-      cell.innerHTML = `<img src="${buildingImages[type]}" alt="${type}">`;
-      cell.querySelector('img').style.width = '100%';
-      cell.querySelector('img').style.height = '100%';
-    });
-    updateInfo();
-  } else {
-    alert('No saved game found.');
+
+document.getElementById('load-btn').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+
+  input.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const saveData = JSON.parse(e.target.result);
+          console.log('Loaded Data:', saveData);  // Debugging line to check loaded data
+
+          // Check the game mode
+          if (saveData.mode === 'arcade') {
+            // Restore game state for arcade mode
+            coins = saveData.coins;
+          } else if (saveData.mode === 'freePlay') {
+            // Set coins to infinite for free play mode
+            coins = Infinity;
+          } else {
+            alert('Unknown game mode in the save file.');
+            return;
+          }
+
+          // Restore common game state variables
+          score = saveData.score;
+          turn = saveData.turn;
+
+          // Replace the grid HTML with the saved grid
+          document.querySelector('.grid-container').innerHTML = saveData.grid;
+
+          // Re-attach event listeners to the grid cells
+          const gridCells = document.querySelectorAll('.grid-cell');
+          gridCells.forEach(cell => {
+            cell.addEventListener('click', () => {
+              if (!selectedCells.includes(cell)) {
+                if (selectedCells.length > 0) {
+                  selectedCells[0].style.background = '';
+                }
+                selectedCells = [cell];
+                cell.style.background = 'red';
+              }
+            });
+          });
+
+          // Update the game information display
+          updateInfo();
+          console.log('Game loaded successfully!');
+        } catch (error) {
+          console.error('Error parsing the save file:', error);
+          alert('Failed to load the game. The save file may be corrupted.');
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error('Error reading the file:', error);
+        alert('Failed to read the file. Please try again.');
+      };
+
+      reader.readAsText(file);
+    } else {
+      alert('No file selected.');
+    }
+  });
+
+  input.click();
+});
+
+function updateInfo() {
+  coinsEl.textContent = coins === Infinity ? '∞' : coins;
+  scoreEl.textContent = score;
+  turnEl.textContent = turn;
+  upkeepEl.textContent = upkeep;
+  if (coins <= 0 || builtBuildings === 400) {
+    end();
   }
 }
+
+
 
 function showLogoffOverlay() {
   logoffOverlay.style.display = 'flex';
@@ -270,14 +349,6 @@ function calculateProfitAndUpkeep() {
   });
 }
 
-function updateInfo() {
-  coinsEl.textContent = coins === Infinity ? '∞' : coins;
-  scoreEl.textContent = score;
-  turnEl.textContent = turn;
-  profitEl.textContent = profit;
-  upkeepEl.textContent = upkeep;
-}
-
 function getAdjacentBuildings(x, y) {
   const adjacentBuildings = [];
   const adjacentCoords = [
@@ -311,8 +382,3 @@ buildBtn.addEventListener('click', () => {
 });
 
 demolishBtn.addEventListener('click', demolish);
-saveBtn.addEventListener('click', saveGame);
-loadBtn.addEventListener('click', loadGame);
-logoffBtn.addEventListener('click', showLogoffOverlay);
-confirmLogoffBtn.addEventListener('click', logOff);
-cancelLogoffBtn.addEventListener('click', hideLogoffOverlay);
