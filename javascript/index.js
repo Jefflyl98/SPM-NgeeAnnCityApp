@@ -32,39 +32,19 @@ document.getElementById('load-btn').addEventListener('click', () => {
       reader.onload = (e) => {
         try {
           const saveData = JSON.parse(e.target.result);
-          console.log('Loaded Data:', saveData);  // Debugging line to check loaded data
+          console.log('Loaded Data:', saveData); // Debugging line to check loaded data
 
-          // Check the game mode
-          if (saveData.mode !== 'arcade') {
-            alert('Loaded file is not for Arcade mode.');
-            return;
+          // Store the save data in localStorage
+          localStorage.setItem('saveData', JSON.stringify(saveData));
+
+          // Redirect based on the game mode
+          if (saveData.mode === 'arcade') {
+            window.location.href = './html/arcade.html';
+          } else if (saveData.mode === 'freePlay') {
+            window.location.href = './html/free.html';
+          } else {
+            alert('Unknown game mode in the save file.');
           }
-
-          // Restore game state variables
-          coins = saveData.coins;
-          score = saveData.score;
-          turn = saveData.turn;
-
-          // Replace the grid HTML with the saved grid
-          document.querySelector('.grid-container').innerHTML = saveData.grid;
-
-          // Re-attach event listeners to the grid cells
-          const gridCells = document.querySelectorAll('.grid-cell');
-          gridCells.forEach(cell => {
-            cell.addEventListener('click', () => {
-              if (!selectedCells.includes(cell)) {
-                if (selectedCells.length > 0) {
-                  selectedCells[0].style.background = '';
-                }
-                selectedCells = [cell];
-                cell.style.background = 'red';
-              }
-            });
-          });
-
-          // Update the game information display
-          updateInfo();
-          console.log('Game loaded successfully!');
         } catch (error) {
           console.error('Error parsing the save file:', error);
           alert('Failed to load the game. The save file may be corrupted.');
@@ -85,12 +65,65 @@ document.getElementById('load-btn').addEventListener('click', () => {
   input.click();
 });
 
-function updateInfo() {
-  coinsEl.textContent = coins;
-  scoreEl.textContent = score;
-  turnEl.textContent = turn;
-  if (coins <= 0 || builtBuildings === 400) {
-    end();
+document.addEventListener('DOMContentLoaded', () => {
+  const saveData = JSON.parse(localStorage.getItem('saveData'));
+  if (saveData) {
+    try {
+      console.log('Loaded Data:', saveData); // Debugging line to check loaded data
+
+      if (saveData.mode === 'arcade') {
+        restoreGameState(saveData, 'arcade');
+      } else if (saveData.mode === 'freePlay') {
+        restoreGameState(saveData, 'freePlay');
+      } else {
+        alert('Invalid game mode for this page.');
+        window.location.href = 'index.html';
+      }
+    } catch (error) {
+      console.error('Error parsing the save data:', error);
+      alert('Failed to load the game. The save file may be corrupted.');
+    }
   }
+});
+
+function restoreGameState(saveData, mode) {
+  if (mode === 'arcade') {
+    coins = saveData.coins;
+  } else if (mode === 'freePlay') {
+    coins = Infinity;
+  }
+
+  // Restore common game state variables
+  score = saveData.score;
+  turn = saveData.turn;
+
+  // Replace the grid HTML with the saved grid
+  document.querySelector('.grid-container').innerHTML = saveData.grid;
+
+  // Re-attach event listeners to the grid cells
+  const gridCells = document.querySelectorAll('.grid-cell');
+  gridCells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (!selectedCells.includes(cell)) {
+        if (selectedCells.length > 0) {
+          selectedCells[0].style.background = '';
+        }
+        selectedCells = [cell];
+        cell.style.background = 'red';
+      }
+    });
+  });
+
+  // Update the game information display
+  updateInfo();
+  console.log('Game loaded successfully!');
 }
+
+function updateInfo() {
+  // Update any game information displays here
+  // Example:
+  document.getElementById('score-display').textContent = `Score: ${score}`;
+  document.getElementById('turn-display').textContent = `Turn: ${turn}`;
+}
+
 
