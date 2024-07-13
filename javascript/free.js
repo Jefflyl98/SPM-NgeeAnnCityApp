@@ -4,16 +4,12 @@ const demolishBtn = document.getElementById('demolish-btn');
 const leaderboardBtn = document.getElementById('leaderboard-btn');
 const saveBtn = document.getElementById('save-btn');
 const loadBtn = document.getElementById('load-btn');
-const logoffBtn = document.getElementById('logoff-btn');
-const confirmLogoffBtn = document.getElementById('confirm-logoff-btn');
-const cancelLogoffBtn = document.getElementById('cancel-logoff-btn');
 const coinsEl = document.getElementById('coins');
 const scoreEl = document.getElementById('score');
 const turnEl = document.getElementById('turn');
 const profitEl = document.getElementById('profit');
 const upkeepEl = document.getElementById('upkeep');
 const popupOverlay = document.getElementById('popupOverlay');
-const logoffOverlay = document.getElementById('logoffOverlay');
 
 let coins = Infinity;
 let score = 0;
@@ -35,11 +31,27 @@ let buildingImages = {
 let selectedCells = [];
 let existingCells = [];
 
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGrid(gridSize);
+  updateInfo();
+
+  const saveData = loadGameStateFromLocalStorage();
+  if (saveData && saveData.mode === 'freePlay') {
+    try {
+      restoreGameState(saveData, 'freePlay');
+    } catch (error) {
+      console.error('Error parsing the save data:', error);
+    }
+  } else {
+    console.error('Invalid save data or game mode.');
+  }
+});
+
 function initializeGrid(size) {
-  const gridContainer = document.querySelector('.grid-container');
+  const cellSize = 100 / 25; // Fixed cell size for a 25x25 grid
   gridContainer.innerHTML = '';
-  gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-  gridContainer.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+  gridContainer.style.gridTemplateColumns = `repeat(${size}, ${cellSize}%)`;
+  gridContainer.style.gridTemplateRows = `repeat(${size}, ${cellSize}%)`;
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -54,7 +66,6 @@ function initializeGrid(size) {
 }
 
 function expandGrid() {
-  const expansionSizes = [30, 35]; // Example expansion sizes
   if (currentExpansion >= expansionSizes.length) return;
   const newSize = expansionSizes[currentExpansion];
   currentExpansion++;
@@ -71,8 +82,6 @@ function expandGrid() {
     cell.querySelector('img').style.height = '100%';
   });
 }
-
-
 
 function selectCell(cell) {
   if (!selectedCells.includes(cell)) {
@@ -177,7 +186,7 @@ function demolish() {
   }
 }
 
-document.getElementById('save-btn').addEventListener('click', () => {
+saveBtn.addEventListener('click', () => {
   const saveData = {
     mode: 'freePlay',  // or 'arcade', depending on the current mode
     coins,
@@ -197,8 +206,7 @@ document.getElementById('save-btn').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-
-document.getElementById('load-btn').addEventListener('click', () => {
+loadBtn.addEventListener('click', () => {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/json';
@@ -269,6 +277,53 @@ document.getElementById('load-btn').addEventListener('click', () => {
   input.click();
 });
 
+function saveGameStateToLocalStorage(saveData) {
+  localStorage.setItem('saveData', JSON.stringify(saveData));
+}
+
+function loadGameStateFromLocalStorage() {
+  const saveData = JSON.parse(localStorage.getItem('saveData'));
+  if (saveData) {
+    return saveData;
+  }
+  return null;
+}
+
+function restoreGameState(saveData, mode) {
+  let coins, score, turn, selectedCells = [];
+
+  if (mode === 'arcade') {
+    coins = saveData.coins;
+  } else if (mode === 'freePlay') {
+    coins = Infinity;
+  }
+
+  // Restore common game state variables
+  score = saveData.score;
+  turn = saveData.turn;
+
+  // Replace the grid HTML with the saved grid
+  document.querySelector('.grid-container').innerHTML = saveData.grid;
+
+  // Re-attach event listeners to the grid cells
+  const gridCells = document.querySelectorAll('.grid-cell');
+  gridCells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (!selectedCells.includes(cell)) {
+        if (selectedCells.length > 0) {
+          selectedCells[0].style.background = '';
+        }
+        selectedCells = [cell];
+        cell.style.background = 'red';
+      }
+    });
+  });
+
+  // Update the game information display
+  updateInfo();
+  console.log('Game loaded successfully!');
+}
+
 function updateInfo() {
   coinsEl.textContent = coins === Infinity ? '∞' : coins;
   scoreEl.textContent = score;
@@ -277,20 +332,6 @@ function updateInfo() {
   if (coins <= 0 || builtBuildings === 400) {
     end();
   }
-}
-
-
-
-function showLogoffOverlay() {
-  logoffOverlay.style.display = 'flex';
-}
-
-function hideLogoffOverlay() {
-  logoffOverlay.style.display = 'none';
-}
-
-function logOff() {
-  window.location.href = '../index.html';
 }
 
 function calculateScore() {
@@ -367,11 +408,6 @@ function getAdjacentBuildings(x, y) {
   });
   return adjacentBuildings;
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  initializeGrid(gridSize);
-  updateInfo();
-});
 
 buildBtn.addEventListener('click', () => {
   if (selectedCells.length !== 0) {

@@ -1,3 +1,23 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const saveData = loadGameStateFromLocalStorage();
+  if (saveData) {
+    try {
+      console.log('Loaded Data:', saveData); // Debugging line to check loaded data
+
+      if (saveData.mode === 'arcade') {
+        restoreGameState(saveData, 'arcade');
+      } else if (saveData.mode === 'freePlay') {
+        restoreGameState(saveData, 'freePlay');
+      } else {
+        console.error('Invalid game mode for this page.');
+        window.location.href = 'index.html';
+      }
+    } catch (error) {
+      console.error('Error parsing the save data:', error);
+    }
+  }
+});
+
 const loginButton = document.querySelector('.login-button');
 const loginOverlay = document.getElementById('loginOverlay');
 const loginSubmitBtn = document.getElementById('loginSubmitBtn');
@@ -15,7 +35,7 @@ loginSubmitBtn.addEventListener('click', () => {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
   // Add your login logic here
-  alert(`Username: ${username}, Password: ${password}`);
+  console.log(`Username: ${username}, Password: ${password}`);
   loginOverlay.style.display = 'none';
 });
 
@@ -35,7 +55,7 @@ document.getElementById('load-btn').addEventListener('click', () => {
           console.log('Loaded Data:', saveData); // Debugging line to check loaded data
 
           // Store the save data in localStorage
-          localStorage.setItem('saveData', JSON.stringify(saveData));
+          saveGameStateToLocalStorage(saveData);
 
           // Redirect based on the game mode
           if (saveData.mode === 'arcade') {
@@ -43,50 +63,41 @@ document.getElementById('load-btn').addEventListener('click', () => {
           } else if (saveData.mode === 'freePlay') {
             window.location.href = './html/free.html';
           } else {
-            alert('Unknown game mode in the save file.');
+            console.error('Unknown game mode in the save file.');
           }
         } catch (error) {
           console.error('Error parsing the save file:', error);
-          alert('Failed to load the game. The save file may be corrupted.');
         }
       };
 
       reader.onerror = (error) => {
         console.error('Error reading the file:', error);
-        alert('Failed to read the file. Please try again.');
       };
 
       reader.readAsText(file);
     } else {
-      alert('No file selected.');
+      console.error('No file selected.');
     }
   });
 
   input.click();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+function saveGameStateToLocalStorage(saveData) {
+  localStorage.setItem('saveData', JSON.stringify(saveData));
+}
+
+function loadGameStateFromLocalStorage() {
   const saveData = JSON.parse(localStorage.getItem('saveData'));
   if (saveData) {
-    try {
-      console.log('Loaded Data:', saveData); // Debugging line to check loaded data
-
-      if (saveData.mode === 'arcade') {
-        restoreGameState(saveData, 'arcade');
-      } else if (saveData.mode === 'freePlay') {
-        restoreGameState(saveData, 'freePlay');
-      } else {
-        alert('Invalid game mode for this page.');
-        window.location.href = 'index.html';
-      }
-    } catch (error) {
-      console.error('Error parsing the save data:', error);
-      alert('Failed to load the game. The save file may be corrupted.');
-    }
+    return saveData;
   }
-});
+  return null;
+}
 
 function restoreGameState(saveData, mode) {
+  let coins, score, turn, selectedCells = [];
+
   if (mode === 'arcade') {
     coins = saveData.coins;
   } else if (mode === 'freePlay') {
@@ -115,15 +126,12 @@ function restoreGameState(saveData, mode) {
   });
 
   // Update the game information display
-  updateInfo();
+  updateInfo(score, turn);
   console.log('Game loaded successfully!');
 }
 
-function updateInfo() {
+function updateInfo(score, turn) {
   // Update any game information displays here
-  // Example:
   document.getElementById('score-display').textContent = `Score: ${score}`;
   document.getElementById('turn-display').textContent = `Turn: ${turn}`;
 }
-
-

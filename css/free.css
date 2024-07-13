@@ -41,11 +41,12 @@ h2 {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  grid-template-rows: repeat(20, 1fr);
+  justify-content: center; /* Center the grid */
+  align-items: center; /* Center the grid */
   width: 100%;
-  aspect-ratio: 1; /* Ensures the grid is square */
+  height: 100%; /* Ensure the grid container takes full height */
   margin: 20px 0;
+  gap: 0; /* Remove gap between cells */
 }
 
 .grid-cell {
@@ -56,6 +57,9 @@ h2 {
   align-items: center;
   font-size: 8px;
   cursor: pointer;
+  width: calc(100% / 10); /* Make cells significantly larger */
+  height: 0;
+  padding-bottom: calc(100% / 10); /* Ensures the height matches the width for a square shape */
 }
 
 .grid-cell img {
@@ -210,9 +214,8 @@ a {
 }
 
 .option img {
-  max-width: 80px;
-  height: auto;
-  margin-bottom: 10px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .option:hover {
