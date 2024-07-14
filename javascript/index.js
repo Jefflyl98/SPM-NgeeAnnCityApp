@@ -1,22 +1,22 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const saveData = loadGameStateFromLocalStorage();
-  if (saveData) {
-    try {
-      console.log('Loaded Data:', saveData); // Debugging line to check loaded data
+// document.addEventListener('DOMContentLoaded', () => {
+//   const saveData = loadGameStateFromLocalStorage();
+//   if (saveData) {
+//     try {
+//       console.log('Loaded Data:', saveData); // Debugging line to check loaded data
 
-      if (saveData.mode === 'arcade') {
-        restoreGameState(saveData, 'arcade');
-      } else if (saveData.mode === 'freePlay') {
-        restoreGameState(saveData, 'freePlay');
-      } else {
-        console.error('Invalid game mode for this page.');
-        window.location.href = 'index.html';
-      }
-    } catch (error) {
-      console.error('Error parsing the save data:', error);
-    }
-  }
-});
+//       if (saveData.mode === 'arcade') {
+//         restoreGameState(saveData, 'arcade');
+//       } else if (saveData.mode === 'freePlay') {
+//         restoreGameState(saveData, 'freePlay');
+//       } else {
+//         console.error('Invalid game mode for this page.');
+//         window.location.href = 'index.html';
+//       }
+//     } catch (error) {
+//       console.error('Error parsing the save data:', error);
+//     }
+//   }
+// });
 
 const loginButton = document.querySelector('.login-button');
 const loginOverlay = document.getElementById('loginOverlay');
