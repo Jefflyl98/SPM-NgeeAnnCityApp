@@ -1,44 +1,53 @@
 body {
-    font-family: sans-serif;
-    background-color: #e0bb99;
-  }
+  font-family: sans-serif;
+  background: url('../buildinggraphics/citygamebg.jpeg');
+}
 
-  .container {
-    width: 500px;
-    margin: 50px auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
+.container {
+  width: 500px;
+  margin: 50px auto;
+  background-color: rgba(80, 125, 125, 0.9);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #fff;
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+}
 
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+  font-size: 20px;
+}
 
-  th {
-    background-color: #f0f0f0;
-  }
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
 
-  button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+th {
+  background-color: rgba(49, 80, 80, 0.9);
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+}
