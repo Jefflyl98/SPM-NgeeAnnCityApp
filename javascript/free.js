@@ -1,7 +1,6 @@
 const gridContainer = document.querySelector('.grid-container');
 const buildBtn = document.getElementById('build-btn');
 const demolishBtn = document.getElementById('demolish-btn');
-const leaderboardBtn = document.getElementById('leaderboard-btn');
 const saveBtn = document.getElementById('save-btn');
 const loadBtn = document.getElementById('load-btn');
 const coinsEl = document.getElementById('coins');
@@ -94,6 +93,11 @@ function selectCell(cell) {
 }
 
 function showPopup() {
+  if (selectedCells.length === 0) {
+    alert('Please select a cell.');
+    return;
+  }
+  
   popupOverlay.style.display = 'flex';
 
   document.getElementById('buildResidentialBtn').onclick = () => {
@@ -243,15 +247,7 @@ loadBtn.addEventListener('click', () => {
           // Re-attach event listeners to the grid cells
           const gridCells = document.querySelectorAll('.grid-cell');
           gridCells.forEach(cell => {
-            cell.addEventListener('click', () => {
-              if (!selectedCells.includes(cell)) {
-                if (selectedCells.length > 0) {
-                  selectedCells[0].style.background = '';
-                }
-                selectedCells = [cell];
-                cell.style.background = 'red';
-              }
-            });
+            cell.addEventListener('click', () => selectCell(cell));
           });
 
           // Update the game information display
@@ -308,15 +304,7 @@ function restoreGameState(saveData, mode) {
   // Re-attach event listeners to the grid cells
   const gridCells = document.querySelectorAll('.grid-cell');
   gridCells.forEach(cell => {
-    cell.addEventListener('click', () => {
-      if (!selectedCells.includes(cell)) {
-        if (selectedCells.length > 0) {
-          selectedCells[0].style.background = '';
-        }
-        selectedCells = [cell];
-        cell.style.background = 'red';
-      }
-    });
+    cell.addEventListener('click', () => selectCell(cell));
   });
 
   // Update the game information display
