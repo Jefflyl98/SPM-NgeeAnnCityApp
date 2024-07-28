@@ -198,6 +198,7 @@ saveBtn.addEventListener('click', () => {
     turn,
     grid: document.querySelector('.grid-container').innerHTML
   };
+  console.log("test");
   console.log('Save Data:', saveData);  // Debugging line to check save data
   const blob = new Blob([JSON.stringify(saveData)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
