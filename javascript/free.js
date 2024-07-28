@@ -307,7 +307,7 @@ function restoreGameState(saveData, mode) {
   gridCells.forEach(cell => {
     cell.addEventListener('click', () => selectCell(cell));
   });
-
+  console.log('it works!');
   // Update the game information display
   updateInfo();
   console.log('Game loaded successfully!');
